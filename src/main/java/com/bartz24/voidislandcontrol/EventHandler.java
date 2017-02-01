@@ -2,21 +2,35 @@ package com.bartz24.voidislandcontrol;
 
 import java.util.Random;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.bartz24.voidislandcontrol.api.IslandManager;
 import com.bartz24.voidislandcontrol.api.IslandPos;
 import com.bartz24.voidislandcontrol.config.ConfigOptions;
 import com.bartz24.voidislandcontrol.world.WorldTypeVoid;
 
+import mcjty.lib.tools.ChatTools;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockCommandBlock;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiCreateWorld;
+import net.minecraft.client.gui.GuiWorldSelection;
+import net.minecraft.command.CommandException;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.passive.EntityCow;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntityCommandBlock;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.GameType;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldType;
 import net.minecraft.world.border.WorldBorder;
+import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.world.WorldEvent.Save;
@@ -25,27 +39,59 @@ import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class EventHandler {
 	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+	public void onOpenGui(GuiOpenEvent e) {
+		if (e.getGui() instanceof GuiCreateWorld
+				&& Minecraft.getMinecraft().currentScreen instanceof GuiWorldSelection) {
+			// Thanks YUNoMakeGoodMap :D
+			GuiCreateWorld cw = (GuiCreateWorld) e.getGui();
+			ReflectionHelper.setPrivateValue(GuiCreateWorld.class, cw, getType(), "field_146331_K", "selectedIndex");
+		}
+	}
+
+	private int getType() {
+		for (int i = 0; i < WorldType.WORLD_TYPES.length; i++) {
+			if (WorldType.WORLD_TYPES[i] instanceof WorldTypeVoid)
+				return i;
+		}
+		return 0;
+	}
+
+	@SubscribeEvent
 	public void playerUpdate(LivingUpdateEvent event) {
-		if (event.getEntityLiving() instanceof EntityPlayer && !event.getEntity().world.isRemote) {
+		if (event.getEntityLiving() instanceof EntityPlayer && !event.getEntity().getEntityWorld().isRemote) {
 			EntityPlayer player = (EntityPlayer) event.getEntityLiving();
-			NBTTagCompound data = player.getEntityData();
-			if (!data.hasKey(EntityPlayer.PERSISTED_NBT_TAG))
-				data.setTag(EntityPlayer.PERSISTED_NBT_TAG, new NBTTagCompound());
 
-			NBTTagCompound persist = data.getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
-
-			if (player.world.getWorldInfo().getTerrainType() instanceof WorldTypeVoid && player.dimension == 0) {
+			if (player.getEntityWorld().getWorldInfo().getTerrainType() instanceof WorldTypeVoid
+					&& player.dimension == 0) {
 				if (!IslandManager.hasPlayerSpawned(player.getGameProfile().getId())) {
-					World world = player.world;
-					if (world.getSpawnPoint().getX() != 0 && world.getSpawnPoint().getY() != 0)
+					World world = player.getEntityWorld();
+					if (world.getSpawnPoint().getX() != 0 && world.getSpawnPoint().getZ() != 0)
 						world.setSpawnPoint(new BlockPos(0, ConfigOptions.islandYSpawn, 0));
 					BlockPos spawn = world.getSpawnPoint();
 
-					if (!IslandManager.hasPosition(0, 0)) {
+					if (!IslandManager.hasPosition(0, 0))
+					{
 						IslandManager.CurrentIslandsList.add(new IslandPos(0, 0));
+						createSpawn(player.getEntityWorld(), spawn);
+					}
+
+					if (ConfigOptions.autoCreate && !IslandManager.worldOneChunk) {
+
+						if (player instanceof EntityPlayerMP) {
+							try {
+								PlatformCommand.newPlatform((EntityPlayerMP) player, new String[] { "create" });
+							} catch (CommandException e) {
+								ChatTools.addChatMessage(player, new TextComponentString(e.getMessage()));
+							}
+						}
+					} else {
 
 						if (ConfigOptions.oneChunk) {
 							WorldBorder border = event.getEntityLiving().getEntityWorld().getMinecraftServer().worlds[0]
@@ -58,20 +104,48 @@ public class EventHandler {
 							IslandManager.worldOneChunk = true;
 						}
 
-						spawnPlayer(player, spawn, true);
-					} else
 						spawnPlayer(player, spawn, false);
-
+					}
 					IslandManager.spawnedPlayers.add(player.getGameProfile().getId().toString());
 
 				}
 			}
+
+			if (IslandManager.hasVisitLoc(player) && player.dimension == 0) {
+				int posX = IslandManager.getVisitLoc(player).getX() * ConfigOptions.islandDistance;
+				int posY = IslandManager.getVisitLoc(player).getY() * ConfigOptions.islandDistance;
+				if (Math.sqrt(Math.pow(player.posX - posX, 2)
+						+ Math.pow(player.posY - posY, 2)) > ConfigOptions.islandDistance / 2) {
+					ChatTools.addChatMessage(player,
+							new TextComponentString(TextFormatting.RED + "You can't be visiting that far away!"));
+					player.setGameType(GameType.SURVIVAL);
+					IslandManager.removeVisitLoc(player);
+					IslandManager.tpPlayerToPos(player, new BlockPos(posX, ConfigOptions.islandYSpawn, posY));
+				}
+			}
+
+			loadWorld(player);
 		}
+	}
+
+	private static void loadWorld(EntityPlayer player) {
+		if (!IslandManager.worldLoaded) {
+			for (String s : ConfigOptions.worldLoadCmds) {
+				if (!StringUtils.isBlank(s))
+					player.getEntityWorld().getMinecraftServer().getCommandManager()
+							.executeCommand(new EntityCow(player.getEntityWorld()) {
+								public boolean canUseCommand(int permLevel, String commandName) {
+									return true;
+								}
+							}, s);
+			}
+		}
+		IslandManager.worldLoaded = true;
 	}
 
 	public static void spawnPlayer(EntityPlayer player, BlockPos pos, boolean spawnPlat) {
 		if (spawnPlat)
-			createSpawn(player.world, pos);
+			createSpawn(player.getEntityWorld(), pos);
 
 		if (player instanceof EntityPlayerMP) {
 			EntityPlayerMP pmp = (EntityPlayerMP) player;
@@ -85,7 +159,7 @@ public class EventHandler {
 	public static void spawnPlayer(EntityPlayer player, BlockPos pos, int forceType) {
 		spawnPlayer(player, pos, false);
 
-		spawnPlat(player.world, pos, forceType);
+		spawnPlat(player.getEntityWorld(), pos, forceType);
 	}
 
 	public static void createSpawn(World world, BlockPos spawn) {
@@ -104,6 +178,28 @@ public class EventHandler {
 
 	private static void spawnPlat(World world, BlockPos spawn, int type) {
 		IslandManager.IslandGenerations.get(type).generate(world, spawn);
+
+		if (!ConfigOptions.cmdBlockType.equals("none")) {
+			Block cmdBlock = null;
+			if (ConfigOptions.cmdBlockType.equals("impulse"))
+				cmdBlock = Blocks.COMMAND_BLOCK;
+			else if (ConfigOptions.cmdBlockType.equals("chain"))
+				cmdBlock = Blocks.CHAIN_COMMAND_BLOCK;
+			else if (ConfigOptions.cmdBlockType.equals("repeating"))
+				cmdBlock = Blocks.REPEATING_COMMAND_BLOCK;
+
+			if (cmdBlock != null) {
+				world.setBlockState(
+						spawn.down(3).add(ConfigOptions.cmdBlockX, ConfigOptions.cmdBlockY, ConfigOptions.cmdBlockZ),
+						cmdBlock.getDefaultState().withProperty(BlockCommandBlock.FACING,
+								EnumFacing.byName(ConfigOptions.cmdBlockDir)),
+						3);
+				TileEntityCommandBlock te = (TileEntityCommandBlock) world.getTileEntity(
+						spawn.down(3).add(ConfigOptions.cmdBlockX, ConfigOptions.cmdBlockY, ConfigOptions.cmdBlockZ));
+				te.getCommandBlockLogic().setCommand(ConfigOptions.cmdBlockCommand);
+				te.setAuto(ConfigOptions.cmdBlockAuto);
+			}
+		}
 	}
 
 	private static void mainSpawn(World world, BlockPos spawn) {
@@ -122,11 +218,13 @@ public class EventHandler {
 	public void onPlayerJoinEvent(PlayerLoggedInEvent event) {
 		EntityPlayer player = event.player;
 
-		if (player.world.getWorldInfo().getTerrainType() instanceof WorldTypeVoid) {
+		if (player.getEntityWorld().getWorldInfo().getTerrainType() instanceof WorldTypeVoid) {
 			if (!IslandManager.playerHasIsland(player.getGameProfile().getId()) && !IslandManager.worldOneChunk)
-				player.sendMessage(new TextComponentString(
-						"Type " + TextFormatting.AQUA.toString() + "/" + ConfigOptions.commandName + " create"
-								+ TextFormatting.WHITE.toString() + " to create your starting island"));
+				ChatTools
+						.addChatMessage(player,
+								new TextComponentString("Type " + TextFormatting.AQUA.toString() + "/"
+										+ ConfigOptions.commandName + " create" + TextFormatting.WHITE.toString()
+										+ " to create your starting island"));
 		}
 	}
 
@@ -134,9 +232,9 @@ public class EventHandler {
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
 		EntityPlayer player = event.player;
 
-		if (player.world.getWorldInfo().getTerrainType() instanceof WorldTypeVoid) {
+		if (player.getEntityWorld().getWorldInfo().getTerrainType() instanceof WorldTypeVoid) {
 			if (player.getBedLocation() == null
-					|| player.getBedSpawnLocation(player.world, player.getBedLocation(), true) == null) {
+					|| player.getBedSpawnLocation(player.getEntityWorld(), player.getBedLocation(), true) == null) {
 
 				IslandPos iPos = IslandManager.getPlayerIsland(player.getGameProfile().getId());
 

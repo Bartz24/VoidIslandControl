@@ -2,10 +2,10 @@
 {
   "modid": "voidislandcontrol",
   "name": "Void Island Control",
-  "description": "Adds a world type for custom island generation for void worlds and single biomes.",
-  "version": "1.0",
+  "description": "Adds a world type for custom island generation for void worlds.",
+  "version": "1.0.5",
   "mcversion": "${mcversion}",
-  "url": "Not Yet",
+  "url": "https://github.com/Bartz24/VoidIslandControl",
   "updateUrl": "",
   "authorList": ["Bartz24"],
   "credits": "The Forge and FML people for 1.11.2, masa_ for the help with the better nether portal, other mod authors for examples of world spawn",

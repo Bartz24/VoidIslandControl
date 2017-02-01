@@ -52,6 +52,8 @@ public class VoidIslandControlSaveData extends WorldSavedData
 			IslandManager.worldOneChunk = nbt.getBoolean("oneChunkWorld");
 		if (nbt.hasKey("initialDist"))
 			IslandManager.initialIslandDistance = nbt.getInteger("initialDist");
+		if (nbt.hasKey("worldLoaded"))
+			IslandManager.worldLoaded = nbt.getBoolean("worldLoaded");
 	}
 
 	@Override
@@ -82,6 +84,7 @@ public class VoidIslandControlSaveData extends WorldSavedData
 			nbt.setBoolean("oneChunkWorld", true);
 
 		nbt.setInteger("initialDist", IslandManager.initialIslandDistance);
+		nbt.setBoolean("worldLoaded", IslandManager.worldLoaded);
 
 		return nbt;
 	}

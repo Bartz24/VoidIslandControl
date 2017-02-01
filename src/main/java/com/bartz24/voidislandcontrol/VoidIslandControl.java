@@ -19,7 +19,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
-@Mod(modid = References.ModID, name = References.ModName, useMetadata = true, guiFactory = "com.bartz24.voidislandcontrol.config.ConfigGuiFactory")
+@Mod(modid = References.ModID, name = References.ModName, dependencies = "required-after:compatlayer", useMetadata = true, acceptedMinecraftVersions = "[1.9,1.12)", guiFactory = "com.bartz24.voidislandcontrol.config.ConfigGuiFactory")
 public class VoidIslandControl {
 	@SidedProxy(clientSide = "com.bartz24.voidislandcontrol.proxy.ClientProxy", serverSide = "com.bartz24.voidislandcontrol.proxy.ServerProxy")
 	public static CommonProxy proxy;
@@ -33,9 +33,9 @@ public class VoidIslandControl {
 
 	@Mod.EventHandler
 	public void serverLoading(FMLServerStartingEvent event) {
-		logger.info("Registering Sky Resources commands.");
+		logger.info("Registering Void Island Control commands.");
 		event.registerServerCommand(new PlatformCommand());
-		logger.info("Finished registering Sky Resources commands.");
+		logger.info("Finished registering Void Island Control commands.");
 
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER) {
 			IslandManager.CurrentIslandsList.clear();

@@ -33,10 +33,22 @@ public class ConfigOptions {
 	public static int cloudHeight;
 	public static int horizonHeight;
 	public static boolean netherPortalLink;
+	public static boolean spawnBedrock;
+	public static boolean replaceBedrock;
+	public static boolean cmdBlockAuto;
+	public static String cmdBlockType;
+	public static String cmdBlockCommand;
+	public static String cmdBlockDir;
+	public static int cmdBlockX;
+	public static int cmdBlockY;
+	public static int cmdBlockZ;
+	public static List<String> worldLoadCmds;
+	public static boolean autoCreate;
 
 	// Grass
 	public static boolean enableGrassIsland;
 	public static boolean spawnTree;
+	public static boolean replaceDirt;
 
 	// Sand
 	public static boolean enableSandIsland;
@@ -59,6 +71,7 @@ public class ConfigOptions {
 
 		list.addAll(new ConfigElement(config.getCategory(Configuration.CATEGORY_GENERAL)).getChildElements());
 		list.addAll(new ConfigElement(config.getCategory("islands")).getChildElements());
+		list.addAll(new ConfigElement(config.getCategory("startingInv")).getChildElements());
 
 		return list;
 	}
@@ -78,6 +91,15 @@ public class ConfigOptions {
 		islandSize = config.get("islands", "Island Width/Length", 3, "Works best with odd values").getInt(3);
 
 		spawnChest = config.get("islands", "Spawn Chest", false, "Spawn a chest on island").getBoolean(false);
+		spawnBedrock = config.get("islands", "Spawn Bedrock", true, "Spawns bedrock under the platform")
+				.getBoolean(true);
+		replaceBedrock = config
+				.get("islands", "Replace Bedrock", false,
+						"Replaces bedrock under the platform with a secondary block (ONLY WORKS IF SPAWN BEDROCK IS SET TO FALSE)")
+				.getBoolean(false);
+
+		autoCreate = config.get("islands", "Automatic Create Island", false,
+				"Create a new island for each player that logs in immediately").getBoolean(false);
 
 		netherVoid = config.get("islands", "Nether Void World", true, "Nether generates with nothing").getBoolean(true);
 
@@ -116,7 +138,31 @@ public class ConfigOptions {
 						"Sets the fill layers from the island Y Spawn down to the the bottom layer in the void world")
 				.getString();
 
-		String[] array = new String[36];
+		cmdBlockType = config
+				.get("islands", "(Command Block) Type", "none",
+						"Sets the type of command block to spawn. Valids are none, impulse, chain, repeating")
+				.getString();
+		cmdBlockCommand = config.get("islands", "(Command Block) Command To Execute", "",
+				"Sets the command to be run by the command block").getString();
+		cmdBlockAuto = config.get("islands", "(Command Block) Always Active", true,
+				"Sets the command block to be always active, or require redstone if false").getBoolean();
+		cmdBlockDir = config
+				.get("islands", "(Command Block) Direction Facing", "down",
+						"Sets the direction for the command block to face. Valids are north, south, west, east, up, down")
+				.getString();
+		cmdBlockX = config.get("islands", "(Command Block) X Pos", 0, "Offset from the center block above the bedrock")
+				.getInt();
+		cmdBlockY = config.get("islands", "(Command Block) Y Pos", 0, "Offset from the center block above the bedrock")
+				.getInt();
+		cmdBlockZ = config.get("islands", "(Command Block) Z Pos", 0, "Offset from the center block above the bedrock")
+				.getInt();
+
+		String[] array = new String[] { "" };
+
+		worldLoadCmds = Arrays.asList(
+				config.getStringList("World Load Commands", "islands", array, "List of commands to run on world load"));
+
+		array = new String[36];
 		for (int i = 0; i < 36; i++)
 			array[i] = "";
 
@@ -126,6 +172,7 @@ public class ConfigOptions {
 		enableGrassIsland = config.get("islands", "Enable Grass Island", true, "Allows grass island to be generated")
 				.getBoolean(true);
 		spawnTree = config.get("islands", "Spawn Tree (Grass)", true, "Spawns a tree on the island").getBoolean(true);
+		replaceDirt = config.get("islands", "Dirt Instead", false, "Replaces grass with dirt").getBoolean(false);
 
 		// Sand
 		enableSandIsland = config.get("islands", "Enable Sand Island", true, "Allows sand island to be generated")

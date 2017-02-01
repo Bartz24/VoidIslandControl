@@ -20,8 +20,12 @@ public class IslandRegistry {
 						for (int z = -(int) Math.floor((float) ConfigOptions.islandSize / 2F); z <= (int) Math
 								.floor((float) ConfigOptions.islandSize / 2F); z++) {
 							BlockPos pos = new BlockPos(spawn.getX() + x, spawn.getY(), spawn.getZ() + z);
-							world.setBlockState(pos.down(3), Blocks.GRASS.getDefaultState(), 2);
-							world.setBlockState(pos.down(4), Blocks.BEDROCK.getDefaultState(), 2);
+							world.setBlockState(pos.down(3), ConfigOptions.replaceDirt ? Blocks.DIRT.getDefaultState()
+									: Blocks.GRASS.getDefaultState(), 2);
+							if (ConfigOptions.spawnBedrock)
+								world.setBlockState(pos.down(4), Blocks.BEDROCK.getDefaultState(), 2);
+							else
+								world.setBlockState(pos.down(4), Blocks.DIRT.getDefaultState(), 2);
 						}
 					}
 
@@ -62,7 +66,10 @@ public class IslandRegistry {
 							BlockPos pos = new BlockPos(spawn.getX() + x, spawn.getY(), spawn.getZ() + z);
 							world.setBlockState(pos.down(3),
 									Blocks.SAND.getStateFromMeta(ConfigOptions.redSand ? 1 : 0), 2);
-							world.setBlockState(pos.down(4), Blocks.BEDROCK.getDefaultState(), 2);
+							if (ConfigOptions.spawnBedrock)
+								world.setBlockState(pos.down(4), Blocks.BEDROCK.getDefaultState(), 2);
+							else
+								world.setBlockState(pos.down(4), Blocks.SANDSTONE.getDefaultState(), 2);
 						}
 					}
 					BlockPos pos = new BlockPos(spawn.getX() - 1, spawn.getY(), spawn.getZ() + 1);
@@ -103,7 +110,10 @@ public class IslandRegistry {
 								if (!(x == 0 && z == 0) && ConfigOptions.spawnIgloo)
 									world.setBlockState(pos, Blocks.PACKED_ICE.getDefaultState(), 2);
 								world.setBlockState(pos.down(3), Blocks.SNOW.getDefaultState(), 2);
-								world.setBlockState(pos.down(4), Blocks.BEDROCK.getDefaultState(), 2);
+								if (ConfigOptions.spawnBedrock)
+									world.setBlockState(pos.down(4), Blocks.BEDROCK.getDefaultState(), 2);
+								else
+									world.setBlockState(pos.down(4), Blocks.SNOW.getDefaultState(), 2);
 								if (((x == -1 && z == 1) || (x == 1 && z == 1)) && ConfigOptions.spawnPumpkins)
 									world.setBlockState(pos.down(2), Blocks.PUMPKIN.getDefaultState(), 2);
 								else
@@ -132,7 +142,11 @@ public class IslandRegistry {
 							else
 								world.setBlockState(pos.down(3), Blocks.PLANKS.getStateFromMeta(ConfigOptions.woodMeta),
 										2);
-							world.setBlockState(pos.down(4), Blocks.BEDROCK.getDefaultState(), 2);
+							if (ConfigOptions.spawnBedrock)
+								world.setBlockState(pos.down(4), Blocks.BEDROCK.getDefaultState(), 2);
+							else
+								world.setBlockState(pos.down(4), Blocks.PLANKS.getStateFromMeta(ConfigOptions.woodMeta),
+										2);
 						}
 					}
 					BlockPos pos = new BlockPos(spawn.getX() - 1, spawn.getY(), spawn.getZ() + 1);

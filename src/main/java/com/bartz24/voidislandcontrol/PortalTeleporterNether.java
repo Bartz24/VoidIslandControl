@@ -5,6 +5,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import mcjty.lib.tools.EntityTools;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
@@ -102,7 +104,7 @@ public class PortalTeleporterNether {
 	}
 
 	private static Entity teleportEntity(Entity entity, double x, double y, double z, int dimDst) {
-		if (entity == null || entity.isDead == true || entity.world.isRemote == true) {
+		if (entity == null || entity.isDead == true || entity.getEntityWorld().isRemote == true) {
 			return null;
 		}
 
@@ -114,7 +116,7 @@ public class PortalTeleporterNether {
 			}
 		}
 
-		if (entity.world.isRemote == false && entity.world instanceof WorldServer) {
+		if (entity.getEntityWorld().isRemote == false && entity.getEntityWorld() instanceof WorldServer) {
 			WorldServer worldServerDst = FMLCommonHandler.instance().getMinecraftServerInstance()
 					.worldServerForDimension(dimDst);
 			if (worldServerDst == null) {
@@ -137,7 +139,7 @@ public class PortalTeleporterNether {
 				((EntityLiving) entity).getNavigator().clearPathEntity();
 			}
 
-			if (entity.dimension != dimDst || (entity.world instanceof WorldServer && entity.world != worldServerDst)) {
+			if (entity.dimension != dimDst || (entity.getEntityWorld() instanceof WorldServer && entity.getEntityWorld() != worldServerDst)) {
 				entity = transferEntityToDimension(entity, dimDst, x, y, z);
 			} else if (entity instanceof EntityPlayerMP) {
 				((EntityPlayerMP) entity).connection.setPlayerLocation(x, y, z, entity.rotationYaw,
@@ -153,7 +155,7 @@ public class PortalTeleporterNether {
 
 	private static EntityPlayer transferPlayerToDimension(EntityPlayerMP player, int dimDst, double x, double y,
 			double z) {
-		if (player == null || player.isDead == true || player.dimension == dimDst || player.world.isRemote == true) {
+		if (player == null || player.isDead == true || player.dimension == dimDst || player.getEntityWorld().isRemote == true) {
 			return null;
 		}
 
@@ -177,8 +179,8 @@ public class PortalTeleporterNether {
 		}
 
 		player.dimension = dimDst;
-		player.connection.sendPacket(new SPacketRespawn(player.dimension, player.world.getDifficulty(),
-				player.world.getWorldInfo().getTerrainType(), player.interactionManager.getGameType()));
+		player.connection.sendPacket(new SPacketRespawn(player.dimension, player.getEntityWorld().getDifficulty(),
+				player.getEntityWorld().getWorldInfo().getTerrainType(), player.interactionManager.getGameType()));
 		player.mcServer.getPlayerList().updatePermissionLevel(player);
 		// worldServerSrc.removePlayerEntityDangerously(player); // this crashes
 		worldServerSrc.removeEntity(player);
@@ -230,7 +232,7 @@ public class PortalTeleporterNether {
 
 	private static Entity transferEntityToDimension(Entity entitySrc, int dimDst, double x, double y, double z) {
 		if (entitySrc == null || entitySrc.isDead == true || entitySrc.dimension == dimDst
-				|| entitySrc.world.isRemote == true) {
+				|| entitySrc.getEntityWorld().isRemote == true) {
 			return null;
 		}
 
@@ -247,8 +249,7 @@ public class PortalTeleporterNether {
 		}
 
 		entitySrc.dimension = dimDst;
-		Entity entityDst = EntityList
-				.createEntityByIDFromName(new ResourceLocation(EntityList.getEntityString(entitySrc)), worldServerDst);
+		Entity entityDst = EntityList.createEntityFromNBT(entitySrc.serializeNBT(), worldServerDst);
 		if (entityDst == null) {
 			return null;
 		}
@@ -261,7 +262,7 @@ public class PortalTeleporterNether {
 		if (entitySrc instanceof EntityMinecartContainer) {
 			entitySrc.isDead = true;
 		} else {
-			entitySrc.world.removeEntity(entitySrc); // Note: this will also
+			entitySrc.getEntityWorld().removeEntity(entitySrc); // Note: this will also
 														// remove any entity
 														// mounts
 		}

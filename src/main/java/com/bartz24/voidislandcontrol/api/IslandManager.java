@@ -13,6 +13,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.MobEffects;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
@@ -27,6 +28,7 @@ public class IslandManager {
 	public static ArrayList<String> spawnedPlayers = new ArrayList<String>();
 
 	public static boolean worldOneChunk = false;
+	public static boolean worldLoaded = false;
 	public static int initialIslandDistance = ConfigOptions.islandDistance;
 
 	public static void registerIsland(IslandGen gen) {
@@ -145,8 +147,8 @@ public class IslandManager {
 	}
 
 	public static void tpPlayerToPos(EntityPlayer player, BlockPos pos) {
-		if (!player.world.isAirBlock(pos) && !player.world.isAirBlock(pos.up())) {
-			pos = player.world.getTopSolidOrLiquidBlock(pos);
+		if (!player.getEntityWorld().isAirBlock(pos) && !player.getEntityWorld().isAirBlock(pos.up())) {
+			pos = player.getEntityWorld().getTopSolidOrLiquidBlock(pos);
 
 			player.sendMessage(new TextComponentString("Failed to spawn. Sent to top block of platform spawn."));
 		}
@@ -158,5 +160,47 @@ public class IslandManager {
 	public static void tpPlayerToPosSpawn(EntityPlayer player, BlockPos pos) {
 		tpPlayerToPos(player, pos);
 		player.setSpawnPoint(pos, true);
+	}
+	
+
+	
+	public static void setVisitLoc(EntityPlayer player, int x, int y)
+	{
+		NBTTagCompound data = player.getEntityData();
+		if (!data.hasKey(EntityPlayer.PERSISTED_NBT_TAG))
+			data.setTag(EntityPlayer.PERSISTED_NBT_TAG, new NBTTagCompound());
+		NBTTagCompound persist = data.getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
+		persist.setInteger("VICVisitX", x);
+		persist.setInteger("VICVisitY", y);
+	}
+	
+	public static void removeVisitLoc(EntityPlayer player)
+	{
+		NBTTagCompound data = player.getEntityData();
+		if (!data.hasKey(EntityPlayer.PERSISTED_NBT_TAG))
+			data.setTag(EntityPlayer.PERSISTED_NBT_TAG, new NBTTagCompound());
+		NBTTagCompound persist = data.getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
+		persist.removeTag("VICVisitX");
+		persist.removeTag("VICVisitY");		
+	}
+	
+	public static boolean hasVisitLoc(EntityPlayer player)
+	{
+		NBTTagCompound data = player.getEntityData();
+		if (!data.hasKey(EntityPlayer.PERSISTED_NBT_TAG))
+			data.setTag(EntityPlayer.PERSISTED_NBT_TAG, new NBTTagCompound());
+		NBTTagCompound persist = data.getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
+		
+		return persist.hasKey("VICVisitX") && persist.hasKey("VICVisitY");
+	}
+	
+	public static IslandPos getVisitLoc(EntityPlayer player)
+	{
+		NBTTagCompound data = player.getEntityData();
+		if (!data.hasKey(EntityPlayer.PERSISTED_NBT_TAG))
+			data.setTag(EntityPlayer.PERSISTED_NBT_TAG, new NBTTagCompound());
+		NBTTagCompound persist = data.getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
+		
+		return new IslandPos(persist.getInteger("VICVisitX"), persist.getInteger("VICVisitY"));
 	}
 }
