@@ -23,10 +23,8 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerList;
 import net.minecraft.util.math.BlockPos;
@@ -67,7 +65,7 @@ public class PlatformCommand extends CommandBase implements ICommand {
 	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args,
 			@Nullable BlockPos targetPos) {
 		if (args.length == 1) {
-			return getListOfStringsMatchingLastWord(args, "create", "invite", "leave", "home", "spawn", "reset",
+			return getListOfStringsMatchingLastWord(args, "create", "invite", "join", "leave", "home", "spawn", "reset",
 					"visit", "onechunk");
 		} else {
 			String subCommand = args[0];
@@ -98,7 +96,6 @@ public class PlatformCommand extends CommandBase implements ICommand {
 
 		if (!(world.getWorldInfo().getTerrainType() instanceof WorldTypeVoid)) {
 			ChatTools.addChatMessage(player, new TextComponentString("You are not in a void world type."));
-			ChatTools.addChatMessage(player, new TextComponentString("You are not in a void world type."));
 			return;
 		}
 
@@ -109,6 +106,8 @@ public class PlatformCommand extends CommandBase implements ICommand {
 			subCommand = subCommand.trim();
 
 			if (subCommand.equals("create")) {
+				if (args.length > 1 && args[1].equals("bypass"))
+					args = new String[] { args[0] };
 				newPlatform(player, args);
 				MinecraftForge.EVENT_BUS.post(
 						new IslandCreateEvent(player, IslandManager.getPlayerIsland(player.getGameProfile().getId())));
@@ -116,6 +115,8 @@ public class PlatformCommand extends CommandBase implements ICommand {
 				inviteOther(player, args, world);
 				MinecraftForge.EVENT_BUS.post(
 						new IslandInviteEvent(player, IslandManager.getPlayerIsland(player.getGameProfile().getId())));
+			} else if (subCommand.equals("join")) {
+				joinPlatform(player, args, world);
 			} else if (subCommand.equals("leave")) {
 				IslandPos pos = IslandManager.getPlayerIsland(player.getGameProfile().getId());
 				leavePlatform(player, args);
@@ -173,7 +174,8 @@ public class PlatformCommand extends CommandBase implements ICommand {
 			return;
 		}
 		if (IslandManager.initialIslandDistance != ConfigOptions.islandDistance) {
-			ChatTools.addChatMessage(player, new TextComponentString("This isn't going to work. The island distance has changed!"));
+			ChatTools.addChatMessage(player,
+					new TextComponentString("This isn't going to work. The island distance has changed!"));
 			return;
 		}
 
@@ -187,12 +189,13 @@ public class PlatformCommand extends CommandBase implements ICommand {
 		}
 
 		if (isPos == null) {
-			ChatTools.addChatMessage(player, new TextComponentString("Player doesn't exist or player doesn't have an island."));
+			ChatTools.addChatMessage(player,
+					new TextComponentString("Player doesn't exist or player doesn't have an island."));
 			return;
 		}
 
 		BlockPos visitPos = new BlockPos(isPos.getX() * ConfigOptions.islandDistance, ConfigOptions.islandYSpawn,
-				isPos.getY() * ConfigOptions.islandDistance);		
+				isPos.getY() * ConfigOptions.islandDistance);
 
 		IslandManager.setVisitLoc(player, isPos.getX(), isPos.getY());
 		player.setGameType(GameType.SPECTATOR);
@@ -205,6 +208,11 @@ public class PlatformCommand extends CommandBase implements ICommand {
 	}
 
 	public static void reset(EntityPlayerMP player, String[] args, World world) throws CommandException {
+		if (!ConfigOptions.allowIslandCreation) {
+			ChatTools.addChatMessage(player,
+					new TextComponentString(TextFormatting.RED + "Not allowed to create islands!"));
+			return;
+		}
 		if (!IslandManager.worldOneChunk) {
 			leavePlatform(player, new String[] { "" });
 			newPlatform(player, args);
@@ -252,37 +260,46 @@ public class PlatformCommand extends CommandBase implements ICommand {
 
 	void showHelp(EntityPlayerMP player) {
 
-		ChatTools.addChatMessage(player, new TextComponentString(TextFormatting.RED + "create (optional int/string)<type>"
-				+ TextFormatting.WHITE + " : Spawn a new platform. Must not already be on an island."));
+		ChatTools.addChatMessage(player,
+				new TextComponentString(TextFormatting.RED + "create (optional int/string)<type>" + TextFormatting.WHITE
+						+ " : Spawn a new platform. Must not already be on an island."));
 
-		ChatTools.addChatMessage(player, new TextComponentString(TextFormatting.RED + "invite <player>" + TextFormatting.WHITE
-				+ " : Have another player join your island. Player must not already be on an island."));
+		ChatTools.addChatMessage(player,
+				new TextComponentString(TextFormatting.RED + "invite <player>" + TextFormatting.WHITE
+						+ " : Ask another player join your island. Player must do join to go to your island."));
 
 		ChatTools.addChatMessage(player, new TextComponentString(TextFormatting.RED + "leave" + TextFormatting.WHITE
 				+ " : Leave your island, clear inventory, and go to spawn.\n      (If you are the last person, no one can claim that island again.)"));
 
-		ChatTools.addChatMessage(player, new TextComponentString(TextFormatting.RED + "home" + TextFormatting.WHITE
-				+ " : Teleport back to your home island. Must be at least " + ConfigOptions.islandDistance / 2
-				+ " blocks away."));
+		ChatTools.addChatMessage(player,
+				new TextComponentString(TextFormatting.RED + "home" + TextFormatting.WHITE
+						+ " : Teleport back to your home island. Must be at least " + ConfigOptions.islandDistance / 2
+						+ " blocks away."));
 
 		ChatTools.addChatMessage(player, new TextComponentString(
 				TextFormatting.RED + "spawn" + TextFormatting.WHITE + " : Teleport back to spawn (0, 0)."));
 
-		ChatTools.addChatMessage(player, new TextComponentString(TextFormatting.RED + "reset (optional int/string)<type>"
-				+ TextFormatting.WHITE
+		ChatTools.addChatMessage(player, new TextComponentString(TextFormatting.RED
+				+ "reset (optional int/string)<type>" + TextFormatting.WHITE
 				+ " : Creates a new platform in a new spot and clears the players' inventory.\n      (If it doesn't clear everything, be nice and toss the rest? Maybe?\nNot recommended unless all players for that island are online)"));
 
-		ChatTools.addChatMessage(player, new TextComponentString(TextFormatting.RED + "onechunk" + TextFormatting.WHITE
-				+ " : Play in one chunk, on one island. Also resets the spawn chunk."
-				+ (ConfigOptions.oneChunkCommandAllowed ? ""
-						: TextFormatting.RED
-								+ "\n THE COMMAND IS NOT ALLOWED TO BE USED. SET THE CONFIG OPTION TO TRUE.")));
+		ChatTools.addChatMessage(player,
+				new TextComponentString(TextFormatting.RED + "onechunk" + TextFormatting.WHITE
+						+ " : Play in one chunk, on one island. Also resets the spawn chunk."
+						+ (ConfigOptions.oneChunkCommandAllowed ? ""
+								: TextFormatting.RED
+										+ "\n THE COMMAND IS NOT ALLOWED TO BE USED. SET THE CONFIG OPTION TO TRUE.")));
 
-		ChatTools.addChatMessage(player, new TextComponentString(TextFormatting.RED + "visit <player>" + TextFormatting.WHITE
-				+ " : Visit another player's island in spectator mode."));
+		ChatTools.addChatMessage(player, new TextComponentString(TextFormatting.RED + "visit <player>"
+				+ TextFormatting.WHITE + " : Visit another player's island in spectator mode."));
 	}
 
 	public static void newPlatform(EntityPlayerMP player, String[] args) throws CommandException {
+		if ((args.length > 1 && !args[1].equals("bypass")) && !ConfigOptions.allowIslandCreation) {
+			ChatTools.addChatMessage(player,
+					new TextComponentString(TextFormatting.RED + "Not allowed to create islands!"));
+			return;
+		}
 		if (args.length > 2) {
 			ChatTools.addChatMessage(player, new TextComponentString("Must have 0 or 1 argument"));
 			return;
@@ -292,7 +309,8 @@ public class PlatformCommand extends CommandBase implements ICommand {
 			return;
 		}
 		if (IslandManager.initialIslandDistance != ConfigOptions.islandDistance) {
-			ChatTools.addChatMessage(player, new TextComponentString("This isn't going to work. The island distance has changed!"));
+			ChatTools.addChatMessage(player,
+					new TextComponentString("This isn't going to work. The island distance has changed!"));
 			return;
 		}
 
@@ -302,8 +320,11 @@ public class PlatformCommand extends CommandBase implements ICommand {
 		}
 
 		IslandPos position = IslandManager.getNextIsland();
+		if(args.length > 1 && args[1].equals("bypass"))
+			args = new String[] { args[0] };
 
 		if (args.length > 1 && ConfigOptions.worldSpawnType.equals("random")) {
+			
 			Integer i = -1;
 
 			try {
@@ -322,7 +343,8 @@ public class PlatformCommand extends CommandBase implements ICommand {
 			}
 		} else {
 			if (args.length > 1) {
-				ChatTools.addChatMessage(player, new TextComponentString("You can't pick your island as the config overrides it!"));
+				ChatTools.addChatMessage(player,
+						new TextComponentString("You can't pick your island as the config overrides it!"));
 			}
 
 			if (player.connection.playerEntity.dimension != 0)
@@ -348,7 +370,8 @@ public class PlatformCommand extends CommandBase implements ICommand {
 			return;
 		}
 		if (IslandManager.initialIslandDistance != ConfigOptions.islandDistance) {
-			ChatTools.addChatMessage(player, new TextComponentString("This isn't going to work. The island distance has changed!"));
+			ChatTools.addChatMessage(player,
+					new TextComponentString("This isn't going to work. The island distance has changed!"));
 			return;
 		}
 		EntityPlayerMP player2 = (EntityPlayerMP) player.getEntityWorld().getPlayerEntityByName(args[1]);
@@ -368,35 +391,63 @@ public class PlatformCommand extends CommandBase implements ICommand {
 			return;
 		}
 
-		if (IslandManager.playerHasIsland(player2.getGameProfile().getId())) {
-			ChatTools.addChatMessage(player, new TextComponentString(player2.getName() + " already has an island!"));
-			return;
+		for (IslandPos pos : IslandManager.inviteTimes.keySet()) {
+			if (pos.getPlayerUUIDs().get(0).equals(player2.getGameProfile().getId())) {
+				ChatTools.addChatMessage(player,
+						new TextComponentString(player2.getName() + " has an invite already!"));
+				return;
+			}
 		}
 
 		IslandPos position = IslandManager.getPlayerIsland(player.getGameProfile().getId());
 
-		IslandManager.addPlayer(player2.getGameProfile().getId(), position);
+		IslandPos posClone = new IslandPos(position.getX(), position.getY(), player2.getGameProfile().getId());
+		IslandManager.inviteTimes.put(posClone, 20);
+		ChatTools.addChatMessage(player, new TextComponentString("Invited " + player2.getName() + " to your island!"));
+		ChatTools.addChatMessage(player2,
+				new TextComponentString("You have been invited to " + player.getName() + "'s island!"));
+	}
+
+	public static void joinPlatform(EntityPlayerMP player, String[] args, World world) throws CommandException {
+		IslandPos position = null;
+		for (IslandPos pos : IslandManager.inviteTimes.keySet()) {
+			if (pos.getPlayerUUIDs().get(0).equals(player.getGameProfile().getId())) {
+				position = pos;
+			}
+		}
+		if (position == null) {
+			ChatTools.addChatMessage(player, new TextComponentString("You haven't been asked to join recently."));
+			return;
+		}
+
+		IslandManager.addPlayer(player.getGameProfile().getId(), position);
 
 		position = IslandManager.getPlayerIsland(player.getGameProfile().getId());
 
 		for (String name : position.getPlayerUUIDs()) {
 			EntityPlayerMP p = (EntityPlayerMP) world.getPlayerEntityByName(name);
 			if (p != null)
-				ChatTools.addChatMessage(p, new TextComponentString(player2.getName() + " joined your island!"));
-		}
-		
-		if (IslandManager.hasVisitLoc(player2)) {
-			player2.setGameType(GameType.SURVIVAL);
-			IslandManager.removeVisitLoc(player2);
+				ChatTools.addChatMessage(p, new TextComponentString(player.getName() + " joined your island!"));
 		}
 
-		if (player2.connection.playerEntity.dimension != 0)
-			player2.connection.playerEntity.changeDimension(0);
-		IslandManager.tpPlayerToPosSpawn(player2, new BlockPos(position.getX() * ConfigOptions.islandDistance,
+		if (IslandManager.hasVisitLoc(player)) {
+			player.setGameType(GameType.SURVIVAL);
+			IslandManager.removeVisitLoc(player);
+		}
+
+		if (player.connection.playerEntity.dimension != 0)
+			player.connection.playerEntity.changeDimension(0);
+		IslandManager.tpPlayerToPosSpawn(player, new BlockPos(position.getX() * ConfigOptions.islandDistance,
 				ConfigOptions.islandYSpawn, position.getY() * ConfigOptions.islandDistance));
+
 	}
 
 	public static void leavePlatform(EntityPlayerMP player, String[] args) throws CommandException {
+		if (!ConfigOptions.allowIslandCreation) {
+			ChatTools.addChatMessage(player,
+					new TextComponentString(TextFormatting.RED + "Not allowed to create islands!"));
+			return;
+		}
 		if (args.length > 1) {
 			ChatTools.addChatMessage(player, new TextComponentString("Must have no arguments"));
 			return;
@@ -406,7 +457,8 @@ public class PlatformCommand extends CommandBase implements ICommand {
 			return;
 		}
 		if (IslandManager.initialIslandDistance != ConfigOptions.islandDistance) {
-			ChatTools.addChatMessage(player, new TextComponentString("This isn't going to work. The island distance has changed!"));
+			ChatTools.addChatMessage(player,
+					new TextComponentString("This isn't going to work. The island distance has changed!"));
 			return;
 		}
 
@@ -419,7 +471,7 @@ public class PlatformCommand extends CommandBase implements ICommand {
 		ChatTools.addChatMessage(player, new TextComponentString("You are now free to join another island!"));
 
 		player.inventory.clear();
-		
+
 		if (IslandManager.hasVisitLoc(player)) {
 			player.setGameType(GameType.SURVIVAL);
 			IslandManager.removeVisitLoc(player);
@@ -440,7 +492,8 @@ public class PlatformCommand extends CommandBase implements ICommand {
 			return;
 		}
 		if (IslandManager.initialIslandDistance != ConfigOptions.islandDistance) {
-			ChatTools.addChatMessage(player, new TextComponentString("This isn't going to work. The island distance has changed!"));
+			ChatTools.addChatMessage(player,
+					new TextComponentString("This isn't going to work. The island distance has changed!"));
 			return;
 		}
 

@@ -35,6 +35,7 @@ public class VoidIslandControl {
 	public void serverLoading(FMLServerStartingEvent event) {
 		logger.info("Registering Void Island Control commands.");
 		event.registerServerCommand(new PlatformCommand());
+		event.registerServerCommand(new StartingInvCommand());
 		logger.info("Finished registering Void Island Control commands.");
 
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER) {

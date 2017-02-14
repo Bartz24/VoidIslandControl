@@ -1,6 +1,7 @@
 package com.bartz24.voidislandcontrol.api;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,6 +27,10 @@ public class IslandManager {
 	public static ArrayList<IslandPos> CurrentIslandsList = new ArrayList<IslandPos>();
 
 	public static ArrayList<String> spawnedPlayers = new ArrayList<String>();
+	
+	public static HashMap<IslandPos, Integer> inviteTimes = new HashMap<>(); 
+	
+	public static float updateTime;
 
 	public static boolean worldOneChunk = false;
 	public static boolean worldLoaded = false;

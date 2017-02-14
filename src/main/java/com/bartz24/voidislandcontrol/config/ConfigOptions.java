@@ -44,6 +44,7 @@ public class ConfigOptions {
 	public static int cmdBlockZ;
 	public static List<String> worldLoadCmds;
 	public static boolean autoCreate;
+	public static boolean allowIslandCreation;
 
 	// Grass
 	public static boolean enableGrassIsland;
@@ -65,6 +66,9 @@ public class ConfigOptions {
 	public static boolean spawnString;
 	public static boolean spawnWater;
 	public static int woodMeta;
+
+	// GOG
+	public static boolean enableGOGIsland;
 
 	public static List<IConfigElement> getConfigElements() {
 		List<IConfigElement> list = new ArrayList<IConfigElement>();
@@ -199,6 +203,11 @@ public class ConfigOptions {
 				.getBoolean(true);
 		woodMeta = config.get("islands", "Wood Metadata (Wood)", 5, "Sets metadata of wood spawned on the island")
 				.getInt();
+		// GoG
+		enableGOGIsland = config
+				.get("islands", "Enable GoG Island", false,
+						"(id=gog) Allows Garden of Glass island to be generated. Only works in 1.10 and if Botania and Garden of Glass are installed")
+				.getBoolean(false);
 
 		if (config.hasChanged())
 			config.save();

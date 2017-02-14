@@ -1,5 +1,7 @@
 package com.bartz24.voidislandcontrol;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import org.apache.commons.lang3.StringUtils;
@@ -76,8 +78,7 @@ public class EventHandler {
 						world.setSpawnPoint(new BlockPos(0, ConfigOptions.islandYSpawn, 0));
 					BlockPos spawn = world.getSpawnPoint();
 
-					if (!IslandManager.hasPosition(0, 0))
-					{
+					if (!IslandManager.hasPosition(0, 0)) {
 						IslandManager.CurrentIslandsList.add(new IslandPos(0, 0));
 						createSpawn(player.getEntityWorld(), spawn);
 					}
@@ -86,7 +87,7 @@ public class EventHandler {
 
 						if (player instanceof EntityPlayerMP) {
 							try {
-								PlatformCommand.newPlatform((EntityPlayerMP) player, new String[] { "create" });
+								PlatformCommand.newPlatform((EntityPlayerMP) player, new String[] { "create", "bypass" });
 							} catch (CommandException e) {
 								ChatTools.addChatMessage(player, new TextComponentString(e.getMessage()));
 							}
@@ -107,7 +108,6 @@ public class EventHandler {
 						spawnPlayer(player, spawn, false);
 					}
 					IslandManager.spawnedPlayers.add(player.getGameProfile().getId().toString());
-
 				}
 			}
 
@@ -122,6 +122,18 @@ public class EventHandler {
 					IslandManager.removeVisitLoc(player);
 					IslandManager.tpPlayerToPos(player, new BlockPos(posX, ConfigOptions.islandYSpawn, posY));
 				}
+			}
+
+			List<IslandPos> removeAt = new ArrayList<>();
+			for (IslandPos pos : IslandManager.inviteTimes.keySet()) {
+				if (pos.getPlayerUUIDs().get(0).equals(player.getGameProfile().getId())) {
+					IslandManager.inviteTimes.put(pos, IslandManager.inviteTimes.get(pos) - 1);
+					if (IslandManager.inviteTimes.get(pos) <= 0)
+						removeAt.add(pos);
+				}
+			}
+			for (IslandPos pos : removeAt) {
+				IslandManager.inviteTimes.remove(pos);
 			}
 
 			loadWorld(player);

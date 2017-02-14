@@ -3,10 +3,12 @@ package com.bartz24.voidislandcontrol;
 import com.bartz24.voidislandcontrol.api.IslandGen;
 import com.bartz24.voidislandcontrol.api.IslandManager;
 import com.bartz24.voidislandcontrol.config.ConfigOptions;
+import com.bartz24.voidislandcontrol.world.GoGSupport;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.Loader;
 
 public class IslandRegistry {
 	public static void initIslands() {
@@ -24,7 +26,7 @@ public class IslandRegistry {
 									: Blocks.GRASS.getDefaultState(), 2);
 							if (ConfigOptions.spawnBedrock)
 								world.setBlockState(pos.down(4), Blocks.BEDROCK.getDefaultState(), 2);
-							else
+							else if (ConfigOptions.replaceBedrock)
 								world.setBlockState(pos.down(4), Blocks.DIRT.getDefaultState(), 2);
 						}
 					}
@@ -68,7 +70,7 @@ public class IslandRegistry {
 									Blocks.SAND.getStateFromMeta(ConfigOptions.redSand ? 1 : 0), 2);
 							if (ConfigOptions.spawnBedrock)
 								world.setBlockState(pos.down(4), Blocks.BEDROCK.getDefaultState(), 2);
-							else
+							else if (ConfigOptions.replaceBedrock)
 								world.setBlockState(pos.down(4), Blocks.SANDSTONE.getDefaultState(), 2);
 						}
 					}
@@ -112,8 +114,8 @@ public class IslandRegistry {
 								world.setBlockState(pos.down(3), Blocks.SNOW.getDefaultState(), 2);
 								if (ConfigOptions.spawnBedrock)
 									world.setBlockState(pos.down(4), Blocks.BEDROCK.getDefaultState(), 2);
-								else
-									world.setBlockState(pos.down(4), Blocks.SNOW.getDefaultState(), 2);
+								else if (ConfigOptions.replaceBedrock)
+									world.setBlockState(pos.down(4), Blocks.PACKED_ICE.getDefaultState(), 2);
 								if (((x == -1 && z == 1) || (x == 1 && z == 1)) && ConfigOptions.spawnPumpkins)
 									world.setBlockState(pos.down(2), Blocks.PUMPKIN.getDefaultState(), 2);
 								else
@@ -144,7 +146,7 @@ public class IslandRegistry {
 										2);
 							if (ConfigOptions.spawnBedrock)
 								world.setBlockState(pos.down(4), Blocks.BEDROCK.getDefaultState(), 2);
-							else
+							else if (ConfigOptions.replaceBedrock)
 								world.setBlockState(pos.down(4), Blocks.PLANKS.getStateFromMeta(ConfigOptions.woodMeta),
 										2);
 						}
@@ -155,6 +157,18 @@ public class IslandRegistry {
 					}
 					if (ConfigOptions.spawnChest) {
 						pos = new BlockPos(spawn.getX(), spawn.getY() - 2, spawn.getZ() - 1);
+						world.setBlockState(pos, Blocks.CHEST.getDefaultState());
+					}
+				}
+			});
+		}
+
+		if (ConfigOptions.enableGOGIsland && Loader.isModLoaded("Botania") && Loader.isModLoaded("GardenOfGlass")) {
+			IslandManager.registerIsland(new IslandGen("gog") {
+				public void generate(World world, BlockPos spawn) {
+					GoGSupport.spawnGoGIsland(world, spawn);
+					if (ConfigOptions.spawnChest) {
+						BlockPos pos = new BlockPos(spawn.getX(), spawn.getY() - 2, spawn.getZ() - 1);
 						world.setBlockState(pos, Blocks.CHEST.getDefaultState());
 					}
 				}

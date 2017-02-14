@@ -27,7 +27,7 @@ plugins {
     id "net.minecraftforge.gradle.forge" version "2.0.2"
 }
 */
-version = "1.0.5"
+version = "1.1.0"
 group= "com.bartz24.voidislandcontrol" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "voidislandcontrol"
 
@@ -37,7 +37,7 @@ compileJava {
 }
 
 minecraft {
-    version = "1.11.2-13.20.0.2201"
+    version = "1.10.2-12.18.3.2221"
     runDir = "run"
     
     // the mappings can be changed at any time, and must be in the following format.
@@ -50,7 +50,8 @@ minecraft {
 }
 
 dependencies {
-    deobfCompile "com.github.mcjty:compatlayer:1.11.2-0.1.7"
+    deobfCompile "com.github.mcjty:compatlayer:1.10-0.2.2"
+	compile files("lib/Botania r1.9-340.jar")
 
 }
 
