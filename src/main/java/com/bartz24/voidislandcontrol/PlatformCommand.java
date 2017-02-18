@@ -402,7 +402,7 @@ public class PlatformCommand extends CommandBase implements ICommand {
 		IslandPos position = IslandManager.getPlayerIsland(player.getGameProfile().getId());
 
 		IslandPos posClone = new IslandPos(position.getX(), position.getY(), player2.getGameProfile().getId());
-		IslandManager.inviteTimes.put(posClone, 20);
+		IslandManager.inviteTimes.put(posClone, 400);
 		ChatTools.addChatMessage(player, new TextComponentString("Invited " + player2.getName() + " to your island!"));
 		ChatTools.addChatMessage(player2,
 				new TextComponentString("You have been invited to " + player.getName() + "'s island!"));

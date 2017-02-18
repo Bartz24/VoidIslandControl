@@ -105,6 +105,11 @@ public class ConfigOptions {
 		autoCreate = config.get("islands", "Automatic Create Island", false,
 				"Create a new island for each player that logs in immediately").getBoolean(false);
 
+		allowIslandCreation = config
+				.get("islands", "Allow Island Creation", true,
+						"Allows the player to create their own island (Do not turn off if Automatic Create Island is not on")
+				.getBoolean(true);
+
 		netherVoid = config.get("islands", "Nether Void World", true, "Nether generates with nothing").getBoolean(true);
 
 		commandName = config.get("islands", "Name For Command", "island").getString();

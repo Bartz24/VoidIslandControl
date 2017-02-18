@@ -5,9 +5,11 @@ import com.bartz24.voidislandcontrol.api.IslandManager;
 import com.bartz24.voidislandcontrol.config.ConfigOptions;
 import com.bartz24.voidislandcontrol.world.GoGSupport;
 
+import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.Loader;
 
 public class IslandRegistry {
@@ -61,6 +63,7 @@ public class IslandRegistry {
 		if (ConfigOptions.enableSandIsland) {
 			IslandManager.registerIsland(new IslandGen("sand") {
 				public void generate(World world, BlockPos spawn) {
+
 					for (int x = -(int) Math.floor((float) ConfigOptions.islandSize / 2F); x <= (int) Math
 							.floor((float) ConfigOptions.islandSize / 2F); x++) {
 						for (int z = -(int) Math.floor((float) ConfigOptions.islandSize / 2F); z <= (int) Math
@@ -96,6 +99,9 @@ public class IslandRegistry {
 						for (int z = -(int) Math.floor((float) ConfigOptions.islandSize / 2F)
 								- 1; z <= (int) Math.floor((float) ConfigOptions.islandSize / 2F) + 1; z++) {
 							BlockPos pos = new BlockPos(spawn.getX() + x, spawn.getY(), spawn.getZ() + z);
+							if (world.getBiome(pos).getFloatTemperature(new BlockPos(pos)) > 1.0F)								
+								world.getChunkFromBlockCoords(pos).getBiomeArray()[(pos.getZ() & 15) << 4
+										| (pos.getX() & 15)] = (byte) Biome.getIdForBiome(Biomes.PLAINS);
 
 							if (x == -(int) Math.floor((float) ConfigOptions.islandSize / 2F) - 1
 									|| x == (int) Math.floor((float) ConfigOptions.islandSize / 2F) + 1
