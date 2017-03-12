@@ -1,7 +1,6 @@
 package com.bartz24.voidislandcontrol.api;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,10 +26,6 @@ public class IslandManager {
 	public static ArrayList<IslandPos> CurrentIslandsList = new ArrayList<IslandPos>();
 
 	public static ArrayList<String> spawnedPlayers = new ArrayList<String>();
-	
-	public static HashMap<IslandPos, Integer> inviteTimes = new HashMap<>(); 
-	
-	public static float updateTime;
 
 	public static boolean worldOneChunk = false;
 	public static boolean worldLoaded = false;
@@ -166,46 +161,78 @@ public class IslandManager {
 		tpPlayerToPos(player, pos);
 		player.setSpawnPoint(pos, true);
 	}
-	
 
-	
-	public static void setVisitLoc(EntityPlayer player, int x, int y)
-	{
-		NBTTagCompound data = player.getEntityData();
-		if (!data.hasKey(EntityPlayer.PERSISTED_NBT_TAG))
-			data.setTag(EntityPlayer.PERSISTED_NBT_TAG, new NBTTagCompound());
-		NBTTagCompound persist = data.getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
+	public static void setVisitLoc(EntityPlayer player, int x, int y) {
+		NBTTagCompound persist = setPlayerData(player);
+
 		persist.setInteger("VICVisitX", x);
 		persist.setInteger("VICVisitY", y);
 	}
-	
-	public static void removeVisitLoc(EntityPlayer player)
-	{
-		NBTTagCompound data = player.getEntityData();
-		if (!data.hasKey(EntityPlayer.PERSISTED_NBT_TAG))
-			data.setTag(EntityPlayer.PERSISTED_NBT_TAG, new NBTTagCompound());
-		NBTTagCompound persist = data.getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
+
+	public static void removeVisitLoc(EntityPlayer player) {
+		NBTTagCompound persist = setPlayerData(player);
+
 		persist.removeTag("VICVisitX");
-		persist.removeTag("VICVisitY");		
+		persist.removeTag("VICVisitY");
 	}
-	
-	public static boolean hasVisitLoc(EntityPlayer player)
-	{
-		NBTTagCompound data = player.getEntityData();
-		if (!data.hasKey(EntityPlayer.PERSISTED_NBT_TAG))
-			data.setTag(EntityPlayer.PERSISTED_NBT_TAG, new NBTTagCompound());
-		NBTTagCompound persist = data.getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
-		
+
+	public static boolean hasVisitLoc(EntityPlayer player) {
+		NBTTagCompound persist = setPlayerData(player);
+
 		return persist.hasKey("VICVisitX") && persist.hasKey("VICVisitY");
 	}
-	
-	public static IslandPos getVisitLoc(EntityPlayer player)
-	{
+
+	public static IslandPos getVisitLoc(EntityPlayer player) {
+		NBTTagCompound persist = setPlayerData(player);
+
+		return hasVisitLoc(player) ? new IslandPos(persist.getInteger("VICVisitX"), persist.getInteger("VICVisitY"))
+				: null;
+	}
+
+	public static void setJoinLoc(EntityPlayer player, int x, int y) {
+		NBTTagCompound persist = setPlayerData(player);
+
+		persist.setInteger("VICJoinX", x);
+		persist.setInteger("VICJoinY", y);
+		persist.setInteger("VICJoinTime", 400);
+	}
+
+	public static void removeJoinLoc(EntityPlayer player) {
+		NBTTagCompound persist = setPlayerData(player);
+
+		persist.removeTag("VICJoinX");
+		persist.removeTag("VICJoinY");
+		persist.removeTag("VICJoinTime");
+	}
+
+	public static boolean hasJoinLoc(EntityPlayer player) {
+		NBTTagCompound persist = setPlayerData(player);
+
+		return persist.hasKey("VICJoinX") && persist.hasKey("VICJoinY");
+	}
+
+	public static IslandPos getJoinLoc(EntityPlayer player) {
+		NBTTagCompound persist = setPlayerData(player);
+
+		return hasJoinLoc(player) ? new IslandPos(persist.getInteger("VICJoinX"), persist.getInteger("VICJoinY")) : null;
+	}
+
+	public static int getJoinTime(EntityPlayer player) {
+		NBTTagCompound persist = setPlayerData(player);
+
+		return hasJoinLoc(player) ? persist.getInteger("VICJoinTime") : -1;
+	}
+
+	public static void setJoinTime(EntityPlayer player, int val) {
+		NBTTagCompound persist = setPlayerData(player);
+
+		persist.setInteger("VICJoinTime", val);
+	}
+
+	public static NBTTagCompound setPlayerData(EntityPlayer player) {
 		NBTTagCompound data = player.getEntityData();
 		if (!data.hasKey(EntityPlayer.PERSISTED_NBT_TAG))
 			data.setTag(EntityPlayer.PERSISTED_NBT_TAG, new NBTTagCompound());
-		NBTTagCompound persist = data.getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
-		
-		return new IslandPos(persist.getInteger("VICVisitX"), persist.getInteger("VICVisitY"));
+		return data.getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
 	}
 }

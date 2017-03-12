@@ -80,14 +80,15 @@ public class EventHandler {
 
 					if (!IslandManager.hasPosition(0, 0)) {
 						IslandManager.CurrentIslandsList.add(new IslandPos(0, 0));
-						createSpawn(player.getEntityWorld(), spawn);
+						createSpawn(player, player.getEntityWorld(), spawn);
 					}
 
 					if (ConfigOptions.autoCreate && !IslandManager.worldOneChunk) {
 
 						if (player instanceof EntityPlayerMP) {
 							try {
-								PlatformCommand.newPlatform((EntityPlayerMP) player, new String[] { "create", "bypass" });
+								PlatformCommand.newPlatform((EntityPlayerMP) player,
+										new String[] { "create", "bypass" });
 							} catch (CommandException e) {
 								ChatTools.addChatMessage(player, new TextComponentString(e.getMessage()));
 							}
@@ -114,8 +115,8 @@ public class EventHandler {
 			if (IslandManager.hasVisitLoc(player) && player.dimension == 0) {
 				int posX = IslandManager.getVisitLoc(player).getX() * ConfigOptions.islandDistance;
 				int posY = IslandManager.getVisitLoc(player).getY() * ConfigOptions.islandDistance;
-				if (Math.sqrt(Math.pow(player.posX - posX, 2)
-						+ Math.pow(player.posY - posY, 2)) > ConfigOptions.islandDistance / 2) {
+				if (Math.abs(player.posX - posX) > ConfigOptions.islandDistance / 2
+						|| Math.abs(player.posZ - posY) > ConfigOptions.islandDistance / 2) {
 					ChatTools.addChatMessage(player,
 							new TextComponentString(TextFormatting.RED + "You can't be visiting that far away!"));
 					player.setGameType(GameType.SURVIVAL);
@@ -125,15 +126,12 @@ public class EventHandler {
 			}
 
 			List<IslandPos> removeAt = new ArrayList<>();
-			for (IslandPos pos : IslandManager.inviteTimes.keySet()) {
-				if (pos.getPlayerUUIDs().get(0).equals(player.getGameProfile().getId())) {
-					IslandManager.inviteTimes.put(pos, IslandManager.inviteTimes.get(pos) - 1);
-					if (IslandManager.inviteTimes.get(pos) <= 0)
-						removeAt.add(pos);
-				}
-			}
-			for (IslandPos pos : removeAt) {
-				IslandManager.inviteTimes.remove(pos);
+			if (IslandManager.hasJoinLoc(player)) {
+				int time = IslandManager.getJoinTime(player);
+				if (time > 0)
+					IslandManager.setJoinTime(player, time - 1);
+				else
+					IslandManager.removeJoinLoc(player);
 			}
 
 			loadWorld(player);
@@ -157,7 +155,7 @@ public class EventHandler {
 
 	public static void spawnPlayer(EntityPlayer player, BlockPos pos, boolean spawnPlat) {
 		if (spawnPlat)
-			createSpawn(player.getEntityWorld(), pos);
+			createSpawn(player, player.getEntityWorld(), pos);
 
 		if (player instanceof EntityPlayerMP) {
 			EntityPlayerMP pmp = (EntityPlayerMP) player;
@@ -171,10 +169,10 @@ public class EventHandler {
 	public static void spawnPlayer(EntityPlayer player, BlockPos pos, int forceType) {
 		spawnPlayer(player, pos, false);
 
-		spawnPlat(player.getEntityWorld(), pos, forceType);
+		spawnPlat(player, player.getEntityWorld(), pos, forceType);
 	}
 
-	public static void createSpawn(World world, BlockPos spawn) {
+	public static void createSpawn(EntityPlayer player, World world, BlockPos spawn) {
 		if (spawn.getX() == 0 && spawn.getZ() == 0 && !IslandManager.worldOneChunk) {
 			mainSpawn(world, spawn);
 			return;
@@ -185,10 +183,10 @@ public class EventHandler {
 				? random.nextInt(IslandManager.IslandGenerations.size())
 				: IslandManager.getIndexOfIslandType(ConfigOptions.worldSpawnType);
 
-		spawnPlat(world, spawn, type);
+		spawnPlat(player, world, spawn, type);
 	}
 
-	private static void spawnPlat(World world, BlockPos spawn, int type) {
+	private static void spawnPlat(EntityPlayer player, World world, BlockPos spawn, int type) {
 		IslandManager.IslandGenerations.get(type).generate(world, spawn);
 
 		if (!ConfigOptions.cmdBlockType.equals("none")) {
@@ -212,6 +210,12 @@ public class EventHandler {
 				te.setAuto(ConfigOptions.cmdBlockAuto);
 			}
 		}
+
+		IslandPos position = IslandManager.getNextIsland();
+		IslandManager.CurrentIslandsList.add(new IslandPos(IslandManager.IslandGenerations.get(type).Identifier,
+				position.getX(), position.getY(), player.getGameProfile().getId()));
+		System.out.println(IslandManager.CurrentIslandsList.get(IslandManager.CurrentIslandsList.size() - 1)
+				.getPlayerUUIDs().get(0));
 	}
 
 	private static void mainSpawn(World world, BlockPos spawn) {
@@ -231,7 +235,8 @@ public class EventHandler {
 		EntityPlayer player = event.player;
 
 		if (player.getEntityWorld().getWorldInfo().getTerrainType() instanceof WorldTypeVoid) {
-			if (!IslandManager.playerHasIsland(player.getGameProfile().getId()) && !IslandManager.worldOneChunk)
+			if (!IslandManager.playerHasIsland(player.getGameProfile().getId()) && !IslandManager.worldOneChunk
+					&& !ConfigOptions.autoCreate)
 				ChatTools
 						.addChatMessage(player,
 								new TextComponentString("Type " + TextFormatting.AQUA.toString() + "/"

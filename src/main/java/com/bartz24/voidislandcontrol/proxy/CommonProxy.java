@@ -3,6 +3,7 @@ package com.bartz24.voidislandcontrol.proxy;
 import com.bartz24.voidislandcontrol.EventHandler;
 import com.bartz24.voidislandcontrol.IslandRegistry;
 import com.bartz24.voidislandcontrol.config.ConfigOptions;
+import com.bartz24.voidislandcontrol.world.GoGSupport;
 import com.bartz24.voidislandcontrol.world.WorldOverride;
 import com.bartz24.voidislandcontrol.world.WorldTypeVoid;
 
@@ -12,8 +13,6 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public class CommonProxy {
-	EventHandler events = new EventHandler();
-
 	public void preInit(FMLPreInitializationEvent e) {
 		ConfigOptions.loadConfigThenSave(e);
 		new WorldTypeVoid();
@@ -21,7 +20,9 @@ public class CommonProxy {
 	}
 
 	public void init(FMLInitializationEvent e) {
-		MinecraftForge.EVENT_BUS.register(events);
+		MinecraftForge.EVENT_BUS.register(new EventHandler());
+		if (IslandRegistry.isValidGoG())
+			MinecraftForge.EVENT_BUS.register(new GoGSupport());
 
 		WorldOverride.registerWorldProviders();
 	}

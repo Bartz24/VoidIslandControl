@@ -29,8 +29,6 @@ public class VoidIslandControl {
 
 	public static Logger logger;
 
-	public static ToolMaterial materialCactusNeedle = EnumHelper.addToolMaterial("CACTUSNEEDLE", 0, 4, 5, 1, 5);
-
 	@Mod.EventHandler
 	public void serverLoading(FMLServerStartingEvent event) {
 		logger.info("Registering Void Island Control commands.");

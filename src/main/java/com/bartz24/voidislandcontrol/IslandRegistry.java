@@ -99,7 +99,7 @@ public class IslandRegistry {
 						for (int z = -(int) Math.floor((float) ConfigOptions.islandSize / 2F)
 								- 1; z <= (int) Math.floor((float) ConfigOptions.islandSize / 2F) + 1; z++) {
 							BlockPos pos = new BlockPos(spawn.getX() + x, spawn.getY(), spawn.getZ() + z);
-							if (world.getBiome(pos).getFloatTemperature(new BlockPos(pos)) > 1.0F)								
+							if (world.getBiome(pos).getFloatTemperature(new BlockPos(pos)) > 1.0F)
 								world.getChunkFromBlockCoords(pos).getBiomeArray()[(pos.getZ() & 15) << 4
 										| (pos.getX() & 15)] = (byte) Biome.getIdForBiome(Biomes.PLAINS);
 
@@ -169,7 +169,7 @@ public class IslandRegistry {
 			});
 		}
 
-		if (ConfigOptions.enableGOGIsland && Loader.isModLoaded("Botania") && Loader.isModLoaded("GardenOfGlass")) {
+		if (isValidGoG()) {
 			IslandManager.registerIsland(new IslandGen("gog") {
 				public void generate(World world, BlockPos spawn) {
 					GoGSupport.spawnGoGIsland(world, spawn);
@@ -180,5 +180,10 @@ public class IslandRegistry {
 				}
 			});
 		}
+	}
+
+	public static boolean isValidGoG() {
+		return ConfigOptions.enableGOGIsland && ((Loader.isModLoaded("Botania") && Loader.isModLoaded("GardenOfGlass"))
+				|| (Loader.isModLoaded("botania") && Loader.isModLoaded("gardenofglass")));
 	}
 }

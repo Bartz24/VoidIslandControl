@@ -245,7 +245,7 @@ public class PlatformCommand extends CommandBase implements ICommand {
 					EventHandler.spawnPlayer(player, new BlockPos(0, ConfigOptions.islandYSpawn, 0), i);
 				}
 			} else {
-				EventHandler.createSpawn(world, new BlockPos(0, ConfigOptions.islandYSpawn, 0));
+				EventHandler.createSpawn(player, world, new BlockPos(0, ConfigOptions.islandYSpawn, 0));
 			}
 			for (EntityPlayerMP p : players.getPlayers()) {
 				p.inventory.clear();
@@ -301,7 +301,7 @@ public class PlatformCommand extends CommandBase implements ICommand {
 			return;
 		}
 		if (args.length > 2) {
-			ChatTools.addChatMessage(player, new TextComponentString("Must have 0 or 1 argument"));
+			ChatTools.addChatMessage(player, new TextComponentString("Must have 0 or 1 argument"));	
 			return;
 		}
 		if (IslandManager.worldOneChunk) {
@@ -320,11 +320,11 @@ public class PlatformCommand extends CommandBase implements ICommand {
 		}
 
 		IslandPos position = IslandManager.getNextIsland();
-		if(args.length > 1 && args[1].equals("bypass"))
+		if (args.length > 1 && args[1].equals("bypass"))
 			args = new String[] { args[0] };
 
 		if (args.length > 1 && ConfigOptions.worldSpawnType.equals("random")) {
-			
+
 			Integer i = -1;
 
 			try {
@@ -356,8 +356,6 @@ public class PlatformCommand extends CommandBase implements ICommand {
 			player.setGameType(GameType.SURVIVAL);
 			IslandManager.removeVisitLoc(player);
 		}
-		IslandManager.CurrentIslandsList
-				.add(new IslandPos(position.getX(), position.getY(), player.getGameProfile().getId()));
 	}
 
 	public static void inviteOther(EntityPlayerMP player, String[] args, World world) throws CommandException {
@@ -391,30 +389,20 @@ public class PlatformCommand extends CommandBase implements ICommand {
 			return;
 		}
 
-		for (IslandPos pos : IslandManager.inviteTimes.keySet()) {
-			if (pos.getPlayerUUIDs().get(0).equals(player2.getGameProfile().getId())) {
-				ChatTools.addChatMessage(player,
-						new TextComponentString(player2.getName() + " has an invite already!"));
-				return;
-			}
+		if (IslandManager.hasJoinLoc(player2)) {
+			ChatTools.addChatMessage(player, new TextComponentString(player2.getName() + " has an invite already!"));
+			return;
 		}
 
 		IslandPos position = IslandManager.getPlayerIsland(player.getGameProfile().getId());
-
-		IslandPos posClone = new IslandPos(position.getX(), position.getY(), player2.getGameProfile().getId());
-		IslandManager.inviteTimes.put(posClone, 400);
+		IslandManager.setJoinLoc(player2, position.getX(), position.getY());
 		ChatTools.addChatMessage(player, new TextComponentString("Invited " + player2.getName() + " to your island!"));
 		ChatTools.addChatMessage(player2,
 				new TextComponentString("You have been invited to " + player.getName() + "'s island!"));
 	}
 
 	public static void joinPlatform(EntityPlayerMP player, String[] args, World world) throws CommandException {
-		IslandPos position = null;
-		for (IslandPos pos : IslandManager.inviteTimes.keySet()) {
-			if (pos.getPlayerUUIDs().get(0).equals(player.getGameProfile().getId())) {
-				position = pos;
-			}
-		}
+		IslandPos position = IslandManager.getJoinLoc(player);
 		if (position == null) {
 			ChatTools.addChatMessage(player, new TextComponentString("You haven't been asked to join recently."));
 			return;

@@ -211,7 +211,7 @@ public class ConfigOptions {
 		// GoG
 		enableGOGIsland = config
 				.get("islands", "Enable GoG Island", false,
-						"(id=gog) Allows Garden of Glass island to be generated. Only works in 1.10 and if Botania and Garden of Glass are installed")
+						"(id=gog) Allows Garden of Glass island to be generated. Only works if Botania and Garden of Glass are installed")
 				.getBoolean(false);
 
 		if (config.hasChanged())
