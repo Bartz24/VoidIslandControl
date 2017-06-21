@@ -14,7 +14,7 @@ import net.minecraftforge.fml.relauncher.Side;
 public class VoidIslandControlSaveData extends WorldSavedData
 {
 	private static VoidIslandControlSaveData INSTANCE;
-	public static final String dataName = "VICData";
+	public static final String dataName = "SkyResources-SaveData";
 
 	public VoidIslandControlSaveData(String s)
 	{
