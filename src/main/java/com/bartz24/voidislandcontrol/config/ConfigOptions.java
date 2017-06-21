@@ -45,6 +45,7 @@ public class ConfigOptions {
 	public static List<String> worldLoadCmds;
 	public static boolean autoCreate;
 	public static boolean allowIslandCreation;
+	public static boolean resetInventory;
 
 	// Grass
 	public static boolean enableGrassIsland;
@@ -108,6 +109,11 @@ public class ConfigOptions {
 		allowIslandCreation = config
 				.get("islands", "Allow Island Creation", true,
 						"Allows the player to create their own island (Do not turn off if Automatic Create Island is not on")
+				.getBoolean(true);
+		
+		resetInventory = config
+				.get("islands", "Reset Inventory On New Island", true,
+						"Replace players inventories when they join a new island (Uses the starting inventory config settings or clears it)")
 				.getBoolean(true);
 
 		netherVoid = config.get("islands", "Nether Void World", true, "Nether generates with nothing").getBoolean(true);

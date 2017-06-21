@@ -63,8 +63,8 @@ public class StartingInvCommand extends CommandBase implements ICommand {
 			{
 				ConfigOptions.startingItems.set(i, "");				
 			}
-			ConfigOptions.reloadConfigs();
 		}
+		ConfigOptions.reloadConfigs();
 	}
 
 	@Override

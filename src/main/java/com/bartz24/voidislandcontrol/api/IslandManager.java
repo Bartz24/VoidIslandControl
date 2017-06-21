@@ -121,28 +121,30 @@ public class IslandManager {
 	}
 
 	public static void setStartingInv(EntityPlayerMP player) {
-		player.inventory.clear();
-
-		try {
-			for (int i = 0; i < ConfigOptions.startingItems.size(); i++) {
-				String s = ConfigOptions.startingItems.get(i);
-				if (!Strings.isNullOrEmpty(s) && s.contains(":") && s.contains("*")) {
-					String trimmed = s.replaceAll(" ", "");
-					String itemName = trimmed.split(":")[0] + ":" + trimmed.split(":")[1];
-					int meta = Integer.parseInt(trimmed.split(":")[2].split("\\*")[0]);
-					int amt = Integer.parseInt(trimmed.split(":")[2].split("\\*")[1]);
-
-					Item item = CommandGive.getItemByText(player, itemName);
-
-					ItemStack stack = new ItemStack(item, amt, meta);
-
-					player.inventory.setInventorySlotContents(i, stack);
-				}
-			}
-		} catch (Exception e) {
+		if (ConfigOptions.resetInventory) {
 			player.inventory.clear();
-			player.sendMessage(
-					new TextComponentString(TextFormatting.RED + "Error getting starting inventory.\n" + e.toString()));
+
+			try {
+				for (int i = 0; i < ConfigOptions.startingItems.size(); i++) {
+					String s = ConfigOptions.startingItems.get(i);
+					if (!Strings.isNullOrEmpty(s) && s.contains(":") && s.contains("*")) {
+						String trimmed = s.replaceAll(" ", "");
+						String itemName = trimmed.split(":")[0] + ":" + trimmed.split(":")[1];
+						int meta = Integer.parseInt(trimmed.split(":")[2].split("\\*")[0]);
+						int amt = Integer.parseInt(trimmed.split(":")[2].split("\\*")[1]);
+
+						Item item = CommandGive.getItemByText(player, itemName);
+
+						ItemStack stack = new ItemStack(item, amt, meta);
+
+						player.inventory.setInventorySlotContents(i, stack);
+					}
+				}
+			} catch (Exception e) {
+				player.inventory.clear();
+				player.sendMessage(new TextComponentString(
+						TextFormatting.RED + "Error getting starting inventory.\n" + e.toString()));
+			}
 		}
 	}
 
@@ -214,7 +216,8 @@ public class IslandManager {
 	public static IslandPos getJoinLoc(EntityPlayer player) {
 		NBTTagCompound persist = setPlayerData(player);
 
-		return hasJoinLoc(player) ? new IslandPos(persist.getInteger("VICJoinX"), persist.getInteger("VICJoinY")) : null;
+		return hasJoinLoc(player) ? new IslandPos(persist.getInteger("VICJoinX"), persist.getInteger("VICJoinY"))
+				: null;
 	}
 
 	public static int getJoinTime(EntityPlayer player) {
