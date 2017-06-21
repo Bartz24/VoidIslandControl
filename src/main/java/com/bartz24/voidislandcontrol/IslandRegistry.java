@@ -145,6 +145,9 @@ public class IslandRegistry {
 						for (int z = -(int) Math.floor((float) ConfigOptions.islandSize / 2F); z <= (int) Math
 								.floor((float) ConfigOptions.islandSize / 2F); z++) {
 							BlockPos pos = new BlockPos(spawn.getX() + x, spawn.getY(), spawn.getZ() + z);
+							if (world.getBiome(pos).getFloatTemperature(new BlockPos(pos)) < 0.5F)
+								world.getChunkFromBlockCoords(pos).getBiomeArray()[(pos.getZ() & 15) << 4
+										| (pos.getX() & 15)] = (byte) Biome.getIdForBiome(Biomes.PLAINS);
 							if (x == 0 && z == 0 && ConfigOptions.spawnWater)
 								world.setBlockState(pos.down(3), Blocks.WATER.getDefaultState(), 2);
 							else
