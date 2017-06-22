@@ -214,8 +214,6 @@ public class EventHandler {
 		IslandPos position = IslandManager.getNextIsland();
 		IslandManager.CurrentIslandsList.add(new IslandPos(IslandManager.IslandGenerations.get(type).Identifier,
 				position.getX(), position.getY(), player.getGameProfile().getId()));
-		System.out.println(IslandManager.CurrentIslandsList.get(IslandManager.CurrentIslandsList.size() - 1)
-				.getPlayerUUIDs().get(0));
 	}
 
 	private static void mainSpawn(World world, BlockPos spawn) {

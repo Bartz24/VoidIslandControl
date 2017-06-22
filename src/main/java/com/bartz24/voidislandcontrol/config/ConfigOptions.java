@@ -27,6 +27,8 @@ public class ConfigOptions {
 	public static boolean overworldGen;
 	public static List<String> startingItems;
 	public static int singleBiomeID;
+	public static int islandBiomeID;
+	public static int islandBiomeRange;
 	public static int islandYSpawn;
 	public static String bottomBlock;
 	public static String fillBlock;
@@ -110,7 +112,7 @@ public class ConfigOptions {
 				.get("islands", "Allow Island Creation", true,
 						"Allows the player to create their own island (Do not turn off if Automatic Create Island is not on")
 				.getBoolean(true);
-		
+
 		resetInventory = config
 				.get("islands", "Reset Inventory On New Island", true,
 						"Replace players inventories when they join a new island (Uses the starting inventory config settings or clears it)")
@@ -131,8 +133,14 @@ public class ConfigOptions {
 				.get("islands", "Allow One Chunk Mode", false, "Allows for one chunk mode to be turned on in-game")
 				.getBoolean(false);
 		singleBiomeID = config
-				.get("islands", "Single Biome ID", -1, "Sets the biome used for generation in void world -1=default")
+				.get("islands", "Single Biome ID", -1, "Sets the biome used for generation in void world (Look up biome ids on the wiki) -1=default")
 				.getInt(-1);
+		islandBiomeID = config.get("islands", "Island Biome ID", -1,
+				"Sets the biome used for each starting island area in void world (Look up biome ids on the wiki) -1=default").getInt(-1);
+		islandBiomeRange = config
+				.get("islands", "Island Biome Range", 0,
+						"Range for the island biome change config to affect (Used as width for area changed)")
+				.getInt(0);
 		islandYSpawn = config.get("islands", "Island Y Spawn", 88,
 				"Y Coord for islands to spawn (Set to 2 above where you want the ground block)").getInt(88);
 		cloudHeight = config.get("islands", "Cloud Height (Void)", 32, "Sets the cloud height in the void world type")

@@ -57,6 +57,7 @@ public class IslandRegistry {
 						BlockPos pos = new BlockPos(spawn.getX(), spawn.getY() - 2, spawn.getZ() - 1);
 						world.setBlockState(pos, Blocks.CHEST.getDefaultState());
 					}
+					changeBiome(spawn.getX(), spawn.getZ(), world);
 				}
 			});
 		}
@@ -87,6 +88,7 @@ public class IslandRegistry {
 						pos = new BlockPos(spawn.getX(), spawn.getY() - 2, spawn.getZ() - 1);
 						world.setBlockState(pos, Blocks.CHEST.getDefaultState());
 					}
+					changeBiome(spawn.getX(), spawn.getZ(), world);
 				}
 			});
 		}
@@ -133,6 +135,7 @@ public class IslandRegistry {
 						BlockPos pos = new BlockPos(spawn.getX(), spawn.getY() - 2, spawn.getZ() - 1);
 						world.setBlockState(pos, Blocks.CHEST.getDefaultState());
 					}
+					changeBiome(spawn.getX(), spawn.getZ(), world);
 				}
 			});
 		}
@@ -168,6 +171,7 @@ public class IslandRegistry {
 						pos = new BlockPos(spawn.getX(), spawn.getY() - 2, spawn.getZ() - 1);
 						world.setBlockState(pos, Blocks.CHEST.getDefaultState());
 					}
+					changeBiome(spawn.getX(), spawn.getZ(), world);
 				}
 			});
 		}
@@ -180,6 +184,7 @@ public class IslandRegistry {
 						BlockPos pos = new BlockPos(spawn.getX(), spawn.getY() - 2, spawn.getZ() - 1);
 						world.setBlockState(pos, Blocks.CHEST.getDefaultState());
 					}
+					changeBiome(spawn.getX(), spawn.getZ(), world);
 				}
 			});
 		}
@@ -188,5 +193,19 @@ public class IslandRegistry {
 	public static boolean isValidGoG() {
 		return ConfigOptions.enableGOGIsland && ((Loader.isModLoaded("Botania") && Loader.isModLoaded("GardenOfGlass"))
 				|| (Loader.isModLoaded("botania") && Loader.isModLoaded("gardenofglass")));
+	}
+
+	private static void changeBiome(int xIs, int zIs, World world) {
+		if (ConfigOptions.islandBiomeID >= 0) {
+			for (int x = xIs - (int) Math.floor((float) ConfigOptions.islandBiomeRange / 2F); x <= xIs
+					+ (int) Math.floor((float) ConfigOptions.islandBiomeRange / 2F); x++) {
+				for (int z = zIs - (int) Math.floor((float) ConfigOptions.islandBiomeRange / 2F); z <= zIs
+						+ (int) Math.floor((float) ConfigOptions.islandBiomeRange / 2F); z++) {
+					world.getChunkFromBlockCoords(new BlockPos(x, 64, z))
+							.getBiomeArray()[(new BlockPos(x, 64, z).getZ() & 15) << 4
+									| (new BlockPos(x, 64, z).getX() & 15)] = (byte) ConfigOptions.islandBiomeID;
+				}
+			}
+		}
 	}
 }
