@@ -7,9 +7,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.ChunkPrimer;
-import net.minecraft.world.gen.ChunkProviderHell;
+import net.minecraft.world.gen.ChunkGeneratorHell;
 
-public class ChunkGeneratorNetherVoid extends ChunkProviderHell
+public class ChunkGeneratorNetherVoid extends ChunkGeneratorHell
 {
 	World world;
 	public ChunkGeneratorNetherVoid(World par1World, long par2)

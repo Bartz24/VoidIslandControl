@@ -6,7 +6,7 @@ import com.bartz24.voidislandcontrol.config.ConfigOptions;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.world.WorldSavedData;
+import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
@@ -14,7 +14,7 @@ import net.minecraftforge.fml.relauncher.Side;
 public class VoidIslandControlSaveData extends WorldSavedData
 {
 	private static VoidIslandControlSaveData INSTANCE;
-	public static final String dataName = "SkyResources-SaveData";
+	public static final String dataName = "VICData";
 
 	public VoidIslandControlSaveData(String s)
 	{

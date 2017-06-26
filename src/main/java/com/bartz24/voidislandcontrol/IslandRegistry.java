@@ -191,8 +191,7 @@ public class IslandRegistry {
 	}
 
 	public static boolean isValidGoG() {
-		return ConfigOptions.enableGOGIsland && ((Loader.isModLoaded("Botania") && Loader.isModLoaded("GardenOfGlass"))
-				|| (Loader.isModLoaded("botania") && Loader.isModLoaded("gardenofglass")));
+		return ConfigOptions.enableGOGIsland && Loader.isModLoaded("botania") && Loader.isModLoaded("gardenofglass");
 	}
 
 	private static void changeBiome(int xIs, int zIs, World world) {

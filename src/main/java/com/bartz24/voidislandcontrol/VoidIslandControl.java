@@ -6,9 +6,7 @@ import com.bartz24.voidislandcontrol.api.IslandManager;
 import com.bartz24.voidislandcontrol.config.ConfigOptions;
 import com.bartz24.voidislandcontrol.proxy.CommonProxy;
 
-import net.minecraft.item.Item.ToolMaterial;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
@@ -19,7 +17,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
-@Mod(modid = References.ModID, name = References.ModName, dependencies = "required-after:compatlayer", useMetadata = true, acceptedMinecraftVersions = "[1.9,1.12)", guiFactory = "com.bartz24.voidislandcontrol.config.ConfigGuiFactory")
+@Mod(modid = References.ModID, name = References.ModName, useMetadata = true, guiFactory = "com.bartz24.voidislandcontrol.config.ConfigGuiFactory")
 public class VoidIslandControl {
 	@SidedProxy(clientSide = "com.bartz24.voidislandcontrol.proxy.ClientProxy", serverSide = "com.bartz24.voidislandcontrol.proxy.ServerProxy")
 	public static CommonProxy proxy;

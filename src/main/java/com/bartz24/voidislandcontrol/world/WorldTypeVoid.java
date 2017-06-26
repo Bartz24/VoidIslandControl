@@ -7,17 +7,16 @@ import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeProvider;
 import net.minecraft.world.biome.BiomeProviderSingle;
-import net.minecraft.world.chunk.IChunkGenerator;
-import net.minecraft.world.gen.ChunkProviderFlat;
-import net.minecraft.world.gen.ChunkProviderOverworld;
+import net.minecraft.world.gen.ChunkGeneratorFlat;
+import net.minecraft.world.gen.ChunkGeneratorOverworld;
+import net.minecraft.world.gen.IChunkGenerator;
 
 public class WorldTypeVoid extends WorldType {
 	public WorldTypeVoid() {
 		super("voidworld");
 	}
 
-	@Override
-	public boolean showWorldInfoNotice() {
+	public boolean hasInfoNotice() {
 		return true;
 	}
 
@@ -51,12 +50,12 @@ public class WorldTypeVoid extends WorldType {
 	@Override
 	public IChunkGenerator getChunkGenerator(World world, String generatorOptions) {
 		if (!ConfigOptions.overworldGen) {
-			ChunkProviderFlat provider = new ChunkProviderFlat(world, world.getSeed(), false,
+			ChunkGeneratorFlat provider = new ChunkGeneratorFlat(world, world.getSeed(), false,
 					"3;1*" + ConfigOptions.bottomBlock + "," + (ConfigOptions.islandYSpawn - 3) + "*"
 							+ ConfigOptions.fillBlock + ";");
 			world.setSeaLevel(63);
 			return provider;
 		} else
-			return new ChunkProviderOverworld(world, world.getSeed(), true, generatorOptions);
+			return new ChunkGeneratorOverworld(world, world.getSeed(), true, generatorOptions);
 	}
 }

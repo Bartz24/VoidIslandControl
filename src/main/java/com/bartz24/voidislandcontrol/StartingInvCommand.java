@@ -8,8 +8,6 @@ import javax.annotation.Nullable;
 
 import com.bartz24.voidislandcontrol.config.ConfigOptions;
 
-import mcjty.lib.tools.InventoryTools;
-import mcjty.lib.tools.ItemStackTools;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
@@ -51,9 +49,9 @@ public class StartingInvCommand extends CommandBase implements ICommand {
 
 		for (int i = 0; i < 36; i++) {
 			String item = "";
-			ItemStack stack = InventoryTools.getMainInventory(player).get(i);
-			if (!ItemStackTools.isEmpty(stack)) {
-				int amt = ItemStackTools.getStackSize(stack);
+			ItemStack stack = player.inventory.getStackInSlot(i);
+			if (!stack.isEmpty()) {
+				int amt = stack.getCount();
 				int meta = stack.getMetadata();
 				String name = Item.REGISTRY.getNameForObject(stack.getItem()).toString();
 

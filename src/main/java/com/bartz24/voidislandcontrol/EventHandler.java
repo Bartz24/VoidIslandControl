@@ -11,7 +11,6 @@ import com.bartz24.voidislandcontrol.api.IslandPos;
 import com.bartz24.voidislandcontrol.config.ConfigOptions;
 import com.bartz24.voidislandcontrol.world.WorldTypeVoid;
 
-import mcjty.lib.tools.ChatTools;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCommandBlock;
 import net.minecraft.client.Minecraft;
@@ -90,7 +89,7 @@ public class EventHandler {
 								PlatformCommand.newPlatform((EntityPlayerMP) player,
 										new String[] { "create", "bypass" });
 							} catch (CommandException e) {
-								ChatTools.addChatMessage(player, new TextComponentString(e.getMessage()));
+								player.sendMessage(new TextComponentString(e.getMessage()));
 							}
 						}
 					} else {
@@ -117,7 +116,7 @@ public class EventHandler {
 				int posY = IslandManager.getVisitLoc(player).getY() * ConfigOptions.islandDistance;
 				if (Math.abs(player.posX - posX) > ConfigOptions.islandDistance / 2
 						|| Math.abs(player.posZ - posY) > ConfigOptions.islandDistance / 2) {
-					ChatTools.addChatMessage(player,
+					player.sendMessage(
 							new TextComponentString(TextFormatting.RED + "You can't be visiting that far away!"));
 					player.setGameType(GameType.SURVIVAL);
 					IslandManager.removeVisitLoc(player);
@@ -235,11 +234,9 @@ public class EventHandler {
 		if (player.getEntityWorld().getWorldInfo().getTerrainType() instanceof WorldTypeVoid) {
 			if (!IslandManager.playerHasIsland(player.getGameProfile().getId()) && !IslandManager.worldOneChunk
 					&& !ConfigOptions.autoCreate)
-				ChatTools
-						.addChatMessage(player,
-								new TextComponentString("Type " + TextFormatting.AQUA.toString() + "/"
-										+ ConfigOptions.commandName + " create" + TextFormatting.WHITE.toString()
-										+ " to create your starting island"));
+				player.sendMessage(new TextComponentString(
+						"Type " + TextFormatting.AQUA.toString() + "/" + ConfigOptions.commandName + " create"
+								+ TextFormatting.WHITE.toString() + " to create your starting island"));
 		}
 	}
 

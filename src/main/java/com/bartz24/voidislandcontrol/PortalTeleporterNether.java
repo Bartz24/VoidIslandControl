@@ -5,8 +5,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import mcjty.lib.tools.EntityTools;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
@@ -21,7 +19,6 @@ import net.minecraft.network.play.server.SPacketRespawn;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BossInfoServer;
@@ -73,8 +70,7 @@ public class PortalTeleporterNether {
 	 */
 	public Entity travelToDimension(Entity entity, int dimension, BlockPos idealPos, int portalSearchRadius,
 			boolean placeInsidePortal) {
-		WorldServer worldServer = FMLCommonHandler.instance().getMinecraftServerInstance()
-				.worldServerForDimension(dimension);
+		WorldServer worldServer = FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(dimension);
 
 		if (this.searchForExistingPortal(worldServer, idealPos, portalSearchRadius) == false) {
 			double origX = entity.posX;
@@ -117,8 +113,7 @@ public class PortalTeleporterNether {
 		}
 
 		if (entity.getEntityWorld().isRemote == false && entity.getEntityWorld() instanceof WorldServer) {
-			WorldServer worldServerDst = FMLCommonHandler.instance().getMinecraftServerInstance()
-					.worldServerForDimension(dimDst);
+			WorldServer worldServerDst = FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(dimDst);
 			if (worldServerDst == null) {
 				return null;
 			}
@@ -139,7 +134,8 @@ public class PortalTeleporterNether {
 				((EntityLiving) entity).getNavigator().clearPathEntity();
 			}
 
-			if (entity.dimension != dimDst || (entity.getEntityWorld() instanceof WorldServer && entity.getEntityWorld() != worldServerDst)) {
+			if (entity.dimension != dimDst
+					|| (entity.getEntityWorld() instanceof WorldServer && entity.getEntityWorld() != worldServerDst)) {
 				entity = transferEntityToDimension(entity, dimDst, x, y, z);
 			} else if (entity instanceof EntityPlayerMP) {
 				((EntityPlayerMP) entity).connection.setPlayerLocation(x, y, z, entity.rotationYaw,
@@ -155,7 +151,8 @@ public class PortalTeleporterNether {
 
 	private static EntityPlayer transferPlayerToDimension(EntityPlayerMP player, int dimDst, double x, double y,
 			double z) {
-		if (player == null || player.isDead == true || player.dimension == dimDst || player.getEntityWorld().isRemote == true) {
+		if (player == null || player.isDead == true || player.dimension == dimDst
+				|| player.getEntityWorld().isRemote == true) {
 			return null;
 		}
 
@@ -171,8 +168,8 @@ public class PortalTeleporterNether {
 		player.setLocationAndAngles(x, y, z, player.rotationYaw, player.rotationPitch);
 
 		MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-		WorldServer worldServerSrc = server.worldServerForDimension(dimSrc);
-		WorldServer worldServerDst = server.worldServerForDimension(dimDst);
+		WorldServer worldServerSrc = server.getWorld(dimSrc);
+		WorldServer worldServerDst = server.getWorld(dimDst);
 
 		if (worldServerSrc == null || worldServerDst == null) {
 			return null;
@@ -241,8 +238,8 @@ public class PortalTeleporterNether {
 		}
 
 		MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-		WorldServer worldServerSrc = server.worldServerForDimension(entitySrc.dimension);
-		WorldServer worldServerDst = server.worldServerForDimension(dimDst);
+		WorldServer worldServerSrc = server.getWorld(entitySrc.dimension);
+		WorldServer worldServerDst = server.getWorld(dimDst);
 
 		if (worldServerSrc == null || worldServerDst == null) {
 			return null;
@@ -262,9 +259,10 @@ public class PortalTeleporterNether {
 		if (entitySrc instanceof EntityMinecartContainer) {
 			entitySrc.isDead = true;
 		} else {
-			entitySrc.getEntityWorld().removeEntity(entitySrc); // Note: this will also
-														// remove any entity
-														// mounts
+			entitySrc.getEntityWorld().removeEntity(entitySrc); // Note: this
+																// will also
+			// remove any entity
+			// mounts
 		}
 
 		x = MathHelper.clamp(x, -30000000.0d, 30000000.0d);

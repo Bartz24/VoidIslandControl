@@ -1,33 +1,20 @@
-
-// For those who want the bleeding edge
 buildscript {
     repositories {
         jcenter()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
+        maven { url = "http://files.minecraftforge.net/maven" }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
-apply plugin: 'maven'
-
-repositories {
-    maven {
-        url "http://maven.k-4u.nl"
-    }
-}
-
 /*
 // for people who want stable - not yet functional for MC 1.8.8 - we require the forgegradle 2.1 snapshot
 plugins {
     id "net.minecraftforge.gradle.forge" version "2.0.2"
 }
 */
-version = "1.1.7"
+version = "1.2.0"
 group= "com.bartz24.voidislandcontrol" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "voidislandcontrol"
 
@@ -37,7 +24,7 @@ compileJava {
 }
 
 minecraft {
-    version = "1.10.2-12.18.3.2221"
+    version = "1.12-14.21.0.2359"
     runDir = "run"
     
     // the mappings can be changed at any time, and must be in the following format.
@@ -45,13 +32,13 @@ minecraft {
     // stable_#            stables are built at the discretion of the MCP team.
     // Use non-default mappings at your own risk. they may not allways work.
     // simply re-run your setup task after changing the mappings to update your workspace.
-    mappings = "stable_29"
+    mappings = "snapshot_20170624"
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
 dependencies {
-    deobfCompile "com.github.mcjty:compatlayer:1.10-0.2.2"
-	compile files("lib/Botania r1.9-340.jar")
+    //deobfCompile "com.github.mcjty:compatlayer:1.10-0.2.2"
+	//compile files("lib/Botania r1.9-340.jar")
 
 }
 
