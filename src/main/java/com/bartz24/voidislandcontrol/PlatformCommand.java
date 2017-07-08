@@ -22,8 +22,10 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerList;
 import net.minecraft.util.math.BlockPos;
@@ -64,8 +66,8 @@ public class PlatformCommand extends CommandBase implements ICommand {
 	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args,
 			@Nullable BlockPos targetPos) {
 		if (args.length == 1) {
-			return getListOfStringsMatchingLastWord(args, "create", "invite", "join", "leave", "home", "spawn", "reset",
-					"visit", "onechunk");
+			return getListOfStringsMatchingLastWord(args, "create", "invite", "join", "leave", "kick", "home", "spawn",
+					"reset", "visit", "onechunk");
 		} else {
 			String subCommand = args[0];
 			subCommand = subCommand.trim();
@@ -80,6 +82,9 @@ public class PlatformCommand extends CommandBase implements ICommand {
 				return args.length == 2 ? getListOfStringsMatchingLastWord(args, IslandManager.getIslandGenTypes())
 						: Collections.<String> emptyList();
 			} else if (subCommand.equals("visit")) {
+				return args.length == 2 ? getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames())
+						: Collections.<String> emptyList();
+			} else if (subCommand.equals("kick")) {
 				return args.length == 2 ? getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames())
 						: Collections.<String> emptyList();
 			}
@@ -135,6 +140,8 @@ public class PlatformCommand extends CommandBase implements ICommand {
 				visit(player, args);
 				MinecraftForge.EVENT_BUS.post(
 						new IslandVisitEvent(player, IslandManager.getPlayerIsland(player.getGameProfile().getId())));
+			}  else if (subCommand.equals("kick")) {
+				kick(player, args);
 			} else if (subCommand.equals("onechunk")) {
 
 				if (!ConfigOptions.oneChunkCommandAllowed) {
@@ -201,6 +208,56 @@ public class PlatformCommand extends CommandBase implements ICommand {
 			player.changeDimension(0);
 		player.connection.setPlayerLocation(visitPos.getX() + 0.5, visitPos.getY(), visitPos.getZ() + 0.5,
 				player.rotationYaw, player.rotationPitch);
+
+	}
+
+	public static void kick(EntityPlayerMP player, String[] args) throws CommandException {
+		if (args.length != 2) {
+			player.sendMessage(new TextComponentString("Must have 1 argument."));
+			return;
+		}
+		if (IslandManager.worldOneChunk) {
+			player.sendMessage(new TextComponentString("Can't use this command in this mode."));
+			return;
+		}
+
+		EntityPlayerMP player2 = (EntityPlayerMP) player.getEntityWorld().getPlayerEntityByName(args[1]);
+
+		IslandPos isPos = IslandManager.getPlayerIsland(player2.getGameProfile().getId());
+
+		if (args[1].equals(player.getName())) {
+			player.sendMessage(new TextComponentString("Why are you kicking yourself."));
+			return;
+		}
+
+		if (isPos == null) {
+			player.sendMessage(new TextComponentString("Player doesn't exist or player doesn't have an island."));
+			return;
+		}
+
+		if (!isPos.getPlayerUUIDs().contains(player2.getGameProfile().getId())) {
+			player.sendMessage(new TextComponentString("Player isn't on your island."));
+			return;
+		}
+
+		if (!isPos.getPlayerUUIDs().get(0).equals(player.getGameProfile().getId())) {
+			player.sendMessage(new TextComponentString("You are not the owner of the island"));
+			return;
+		}
+
+		if (player2.dimension != 0)
+			player2.changeDimension(0);
+		for (int i = 0; i < player2.inventory.getSizeInventory(); i++) {
+			ItemStack stack = player2.inventory.getStackInSlot(i).copy();
+			EntityItem item = new EntityItem(player.world);
+			item.setItem(stack);
+			item.posX = player.posX;
+			item.posY = player.posY;
+			item.posZ = player.posZ;
+			player.world.spawnEntity(item);
+		}
+		EventHandler.spawnPlayer(player2, new BlockPos(0, ConfigOptions.islandYSpawn, 0), false);
+		player2.sendMessage(new TextComponentString("You have been kicked..."));
 
 	}
 

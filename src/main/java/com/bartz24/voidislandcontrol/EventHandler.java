@@ -38,7 +38,6 @@ import net.minecraftforge.event.world.WorldEvent.Save;
 import net.minecraftforge.event.world.WorldEvent.Unload;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
@@ -112,6 +111,9 @@ public class EventHandler {
 			}
 
 			if (IslandManager.hasVisitLoc(player) && player.dimension == 0) {
+				if (player instanceof EntityPlayerMP
+						&& ((EntityPlayerMP) player).interactionManager.getGameType() != GameType.SPECTATOR)
+					player.setGameType(GameType.SPECTATOR);
 				int posX = IslandManager.getVisitLoc(player).getX() * ConfigOptions.islandDistance;
 				int posY = IslandManager.getVisitLoc(player).getY() * ConfigOptions.islandDistance;
 				if (Math.abs(player.posX - posX) > ConfigOptions.islandDistance / 2
@@ -134,6 +136,24 @@ public class EventHandler {
 			}
 
 			loadWorld(player);
+			if (player.getEntityWorld().getWorldInfo().getTerrainType() instanceof WorldTypeVoid
+					&& player.dimension == 0 && Minecraft.getMinecraft().player != null) {
+				if (!IslandManager.playerHasIsland(player.getGameProfile().getId()) && Minecraft.getMinecraft().player
+						.getGameProfile().getId().equals(player.getGameProfile().getId())) {
+					if (Minecraft.getMinecraft().getToastGui().getToast(IslandToast.class,
+							IslandToast.Type.Island) == null)
+						Minecraft.getMinecraft().getToastGui().add(new IslandToast(
+								new TextComponentString("Create an island!"),
+								new TextComponentString("/" + ConfigOptions.commandName + " create <opt type>")));
+				} else if (IslandManager.playerHasIsland(player.getGameProfile().getId())
+						&& Minecraft.getMinecraft().player.getGameProfile().getId()
+								.equals(player.getGameProfile().getId())) {
+					if (Minecraft.getMinecraft().getToastGui().getToast(IslandToast.class,
+							IslandToast.Type.Island) != null)
+						Minecraft.getMinecraft().getToastGui().getToast(IslandToast.class, IslandToast.Type.Island)
+								.hide();
+				}
+			}
 		}
 	}
 
@@ -224,19 +244,6 @@ public class EventHandler {
 				world.setBlockState(pos.down(3), Blocks.BEDROCK.getDefaultState(), 2);
 				world.setBlockState(pos.down(4), Blocks.BEDROCK.getDefaultState(), 2);
 			}
-		}
-	}
-
-	@SubscribeEvent
-	public void onPlayerJoinEvent(PlayerLoggedInEvent event) {
-		EntityPlayer player = event.player;
-
-		if (player.getEntityWorld().getWorldInfo().getTerrainType() instanceof WorldTypeVoid) {
-			if (!IslandManager.playerHasIsland(player.getGameProfile().getId()) && !IslandManager.worldOneChunk
-					&& !ConfigOptions.autoCreate)
-				player.sendMessage(new TextComponentString(
-						"Type " + TextFormatting.AQUA.toString() + "/" + ConfigOptions.commandName + " create"
-								+ TextFormatting.WHITE.toString() + " to create your starting island"));
 		}
 	}
 

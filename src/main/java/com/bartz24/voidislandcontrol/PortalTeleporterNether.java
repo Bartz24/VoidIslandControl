@@ -283,8 +283,8 @@ public class PortalTeleporterNether {
 	}
 
 	public static void copyDataFromOld(Entity target, Entity old) {
-		Method method = ReflectionHelper.findMethod(Entity.class, target,
-				new String[] { "func_180432_n", "copyDataFromOld", "a" }, Entity.class);
+		Method method = ReflectionHelper.findMethod(Entity.class,
+				 "func_180432_n", "copyDataFromOld" , Entity.class);
 		try {
 			method.invoke(target, old);
 		} catch (UnableToFindMethodException e) {
