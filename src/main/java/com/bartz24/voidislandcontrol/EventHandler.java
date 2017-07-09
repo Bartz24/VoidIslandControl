@@ -136,24 +136,6 @@ public class EventHandler {
 			}
 
 			loadWorld(player);
-			if (player.getEntityWorld().getWorldInfo().getTerrainType() instanceof WorldTypeVoid
-					&& player.dimension == 0 && Minecraft.getMinecraft().player != null) {
-				if (!IslandManager.playerHasIsland(player.getGameProfile().getId()) && Minecraft.getMinecraft().player
-						.getGameProfile().getId().equals(player.getGameProfile().getId())) {
-					if (Minecraft.getMinecraft().getToastGui().getToast(IslandToast.class,
-							IslandToast.Type.Island) == null)
-						Minecraft.getMinecraft().getToastGui().add(new IslandToast(
-								new TextComponentString("Create an island!"),
-								new TextComponentString("/" + ConfigOptions.commandName + " create <opt type>")));
-				} else if (IslandManager.playerHasIsland(player.getGameProfile().getId())
-						&& Minecraft.getMinecraft().player.getGameProfile().getId()
-								.equals(player.getGameProfile().getId())) {
-					if (Minecraft.getMinecraft().getToastGui().getToast(IslandToast.class,
-							IslandToast.Type.Island) != null)
-						Minecraft.getMinecraft().getToastGui().getToast(IslandToast.class, IslandToast.Type.Island)
-								.hide();
-				}
-			}
 		}
 	}
 
