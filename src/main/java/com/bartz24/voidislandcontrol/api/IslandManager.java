@@ -154,7 +154,7 @@ public class IslandManager {
 
 			player.sendMessage(new TextComponentString("Failed to spawn. Sent to top block of platform spawn."));
 		}
-		player.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 60, 20, false, false));
+		player.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 120, 20, false, false));
 
 		player.setPositionAndUpdate(pos.getX() + 0.5, pos.getY() + 2.6, pos.getZ() + 0.5);
 	}
