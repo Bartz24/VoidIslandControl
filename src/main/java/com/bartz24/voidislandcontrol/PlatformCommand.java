@@ -537,10 +537,9 @@ public class PlatformCommand extends CommandBase implements ICommand {
 		BlockPos home = new BlockPos(isPos.getX() * ConfigOptions.islandDistance, ConfigOptions.islandYSpawn,
 				isPos.getY() * ConfigOptions.islandDistance);
 
-		if (Math.hypot(player.posX - home.getX() - 0.5, player.posZ - home.getZ() - 0.5) < ConfigOptions.islandDistance
-				/ 2) {
+		if (Math.hypot(player.posX - home.getX() - 0.5, player.posZ - home.getZ() - 0.5) < ConfigOptions.islandResetDistance) {
 			player.sendMessage(new TextComponentString("You are too close to home!\nYou must be at least "
-					+ (ConfigOptions.islandDistance / 2) + " blocks away!"));
+					+ ConfigOptions.islandResetDistance + " blocks away!"));
 			return;
 		}
 
