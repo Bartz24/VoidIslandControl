@@ -51,8 +51,7 @@ public class WorldTypeVoid extends WorldType {
 	public IChunkGenerator getChunkGenerator(World world, String generatorOptions) {
 		if (!ConfigOptions.overworldGen) {
 			ChunkGeneratorFlat provider = new ChunkGeneratorFlat(world, world.getSeed(), false,
-					"3;1*" + ConfigOptions.bottomBlock + "," + (ConfigOptions.islandYSpawn - 3) + "*"
-							+ ConfigOptions.fillBlock + ";");
+					"3;254*minecraft:stone,minecraft:lava;");
 			world.setSeaLevel(63);
 			return provider;
 		} else

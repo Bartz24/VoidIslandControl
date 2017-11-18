@@ -156,7 +156,7 @@ public class IslandManager {
 		}
 		player.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 120, 20, false, false));
 
-		player.setPositionAndUpdate(pos.getX() + 0.5, pos.getY() + 2.6, pos.getZ() + 0.5);
+		player.setPositionAndUpdate(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
 	}
 
 	public static void tpPlayerToPosSpawn(EntityPlayer player, BlockPos pos) {

@@ -168,9 +168,9 @@ public class EventHandler {
 	}
 
 	public static void spawnPlayer(EntityPlayer player, BlockPos pos, int forceType) {
-		spawnPlayer(player, pos, false);
-
 		spawnPlat(player, player.getEntityWorld(), pos, forceType);
+		
+		spawnPlayer(player, pos, false);
 	}
 
 	public static void createSpawn(EntityPlayer player, World world, BlockPos spawn) {
@@ -223,6 +223,15 @@ public class EventHandler {
 			for (int z = -(int) Math.floor((float) ConfigOptions.islandSize / 2F); z <= (int) Math
 					.floor((float) ConfigOptions.islandSize / 2F); z++) {
 				BlockPos pos = new BlockPos(spawn.getX() + x, spawn.getY(), spawn.getZ() + z);
+				world.setBlockState(pos.up(6), Blocks.AIR.getDefaultState(), 2);
+				world.setBlockState(pos.up(5), Blocks.AIR.getDefaultState(), 2);
+				world.setBlockState(pos.up(4), Blocks.AIR.getDefaultState(), 2);
+				world.setBlockState(pos.up(3), Blocks.AIR.getDefaultState(), 2);
+				world.setBlockState(pos.up(2), Blocks.AIR.getDefaultState(), 2);
+				world.setBlockState(pos.up(1), Blocks.AIR.getDefaultState(), 2);
+				world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
+				world.setBlockState(pos.down(1), Blocks.AIR.getDefaultState(), 2);
+				world.setBlockState(pos.down(2), Blocks.AIR.getDefaultState(), 2);
 				world.setBlockState(pos.down(3), Blocks.BEDROCK.getDefaultState(), 2);
 				world.setBlockState(pos.down(4), Blocks.BEDROCK.getDefaultState(), 2);
 			}
