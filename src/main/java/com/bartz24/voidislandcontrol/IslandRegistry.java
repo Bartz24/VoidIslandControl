@@ -34,7 +34,7 @@ public class IslandRegistry {
 					}
 
 					if (ConfigOptions.spawnTree) {
-						for (int y = 0; y < 5; y++) {
+						for (int y = 0; y < 9; y++) {
 							for (int x = -2; x < 3; x++) {
 								for (int z = -2; z < 3; z++) {
 									BlockPos pos = new BlockPos(spawn.getX() + x, spawn.getY() - 2 + y,
@@ -42,12 +42,16 @@ public class IslandRegistry {
 									if (x == 0 && z == 0) {
 										if (y < 3)
 											world.setBlockState(pos, Blocks.LOG.getDefaultState(), 2);
-										else
+										else if (y < 5)
 											world.setBlockState(pos, Blocks.LEAVES.getDefaultState(), 2);
+										else 
+											world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
 									} else if (y == 2 || y == 3) {
 										world.setBlockState(pos, Blocks.LEAVES.getDefaultState(), 2);
 									} else if (y == 4 && x >= -1 && x <= 1 && z >= -1 && z <= 1) {
 										world.setBlockState(pos, Blocks.LEAVES.getDefaultState(), 2);
+									} else {
+										world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
 									}
 								}
 							}
