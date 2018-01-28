@@ -1,6 +1,7 @@
 package com.bartz24.voidislandcontrol.world;
 
 import com.bartz24.voidislandcontrol.config.ConfigOptions;
+import com.bartz24.voidislandcontrol.config.ConfigOptions.WorldGenSettings.WorldGenType;
 
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
@@ -22,7 +23,7 @@ public class WorldTypeVoid extends WorldType {
 
 	@Override
 	public int getMinimumSpawnHeight(World world) {
-		return ConfigOptions.islandYSpawn;
+		return ConfigOptions.islandSettings.islandYLevel;
 	}
 
 	public int getSpawnFuzz() {
@@ -31,17 +32,17 @@ public class WorldTypeVoid extends WorldType {
 
 	@Override
 	public float getCloudHeight() {
-		return ConfigOptions.cloudHeight;
+		return ConfigOptions.worldGenSettings.cloudLevel;
 	}
 
 	@Override
 	public double getHorizon(World world) {
-		return ConfigOptions.horizonHeight;
+		return ConfigOptions.worldGenSettings.horizonLevel;
 	}
 
 	public BiomeProvider getBiomeProvider(World world) {
-		if (ConfigOptions.singleBiomeID > -1) {
-			return new BiomeProviderSingle(Biome.getBiome(ConfigOptions.singleBiomeID));
+		if (ConfigOptions.worldGenSettings.worldBiomeID > -1) {
+			return new BiomeProviderSingle(Biome.getBiome(ConfigOptions.worldGenSettings.worldBiomeID));
 		} else {
 			return new BiomeProvider(world.getWorldInfo());
 		}
@@ -49,10 +50,11 @@ public class WorldTypeVoid extends WorldType {
 
 	@Override
 	public IChunkGenerator getChunkGenerator(World world, String generatorOptions) {
-		if (!ConfigOptions.overworldGen) {
-			ChunkGeneratorFlat provider = new ChunkGeneratorFlat(world, world.getSeed(), false,
-					"3;1*" + ConfigOptions.bottomBlock + "," + (ConfigOptions.islandYSpawn - 3) + "*"
-							+ ConfigOptions.fillBlock + ";");
+		if (ConfigOptions.worldGenSettings.worldGenType != WorldGenType.OVERWORLD) {
+			String genSettings = "3;1*minecraft:air";
+			if (ConfigOptions.worldGenSettings.worldGenType == WorldGenType.SUPERFLAT)
+				genSettings = ConfigOptions.worldGenSettings.worldGenSpecialParameters;
+			ChunkGeneratorFlat provider = new ChunkGeneratorFlat(world, world.getSeed(), false, genSettings);
 			world.setSeaLevel(63);
 			return provider;
 		} else

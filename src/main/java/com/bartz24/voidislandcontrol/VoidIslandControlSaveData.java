@@ -27,7 +27,7 @@ public class VoidIslandControlSaveData extends WorldSavedData
 		IslandManager.CurrentIslandsList.clear();
 		IslandManager.spawnedPlayers.clear();
 		IslandManager.worldOneChunk = false;
-		IslandManager.initialIslandDistance = ConfigOptions.islandDistance;
+		IslandManager.initialIslandDistance = ConfigOptions.islandSettings.islandDistance;
 		NBTTagList list = nbt.getTagList("Positions",
 				Constants.NBT.TAG_COMPOUND);
 		for (int i = 0; i < list.tagCount(); ++i)

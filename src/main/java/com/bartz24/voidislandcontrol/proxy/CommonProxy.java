@@ -14,13 +14,13 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public class CommonProxy {
 	public void preInit(FMLPreInitializationEvent e) {
-		ConfigOptions.loadConfigThenSave(e);
 		new WorldTypeVoid();
 		IslandRegistry.initIslands();
 	}
 
 	public void init(FMLInitializationEvent e) {
 		MinecraftForge.EVENT_BUS.register(new EventHandler());
+		MinecraftForge.EVENT_BUS.register(new ConfigOptions());
 		if (IslandRegistry.isValidGoG())
 			MinecraftForge.EVENT_BUS.register(new GoGSupport());
 

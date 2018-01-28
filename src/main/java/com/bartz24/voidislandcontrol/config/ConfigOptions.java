@@ -1,252 +1,205 @@
 package com.bartz24.voidislandcontrol.config;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
-import net.minecraftforge.common.config.ConfigElement;
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.client.config.IConfigElement;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import com.bartz24.voidislandcontrol.References;
 
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.ConfigManager;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+@Config(modid = References.ModID)
 public class ConfigOptions {
-	public static Configuration config;
 
-	public static String worldSpawnType;
+	@Config.Comment("Config Settings for the world generation")
+	public static WorldGenSettings worldGenSettings = new WorldGenSettings();
 
-	public static boolean netherVoid;
-	public static boolean netherVoidStructures;
-	public static boolean endVoid;
-	public static boolean endVoidStructures;
+	public static class WorldGenSettings {
+		@Config.Comment("Nether dimension will be a void world")
+		public boolean netherVoid = true;
+		@Config.Comment("Nether dimension will generate structures (Only takes effect if nether is a void world)")
+		public boolean netherVoidStructures = true;
+		@Config.Comment("End dimension will be a void world")
+		public boolean endVoid = true;
+		@Config.Comment("End dimension will generate structures (Only takes effect if end is a void world)")
+		public boolean endVoidStructures = true;
+		@Config.Comment("Overworld generation type")
+		public WorldGenType worldGenType = WorldGenType.VOID;
+		@Config.Comment("VOID-NOT USED, OVERWORLD-NOT USED, SUPERFLAT-Use the string as used for normal flat worlds")
+		public String worldGenSpecialParameters = "";
+		@Config.Comment("Biome used for entire world")
+		public int worldBiomeID = -1;
+		@Config.Comment("Level where clouds appear")
+		public int cloudLevel = 32;
+		@Config.Comment("Level where the horizon appears")
+		public int horizonLevel = 40;
 
-	public static String commandName;
-
-	public static int islandDistance;
-	public static int islandSize;
-	public static int islandResetDistance;
-	public static boolean spawnChest;
-	public static boolean oneChunk;
-	public static boolean oneChunkCommandAllowed;
-	public static boolean overworldGen;
-	public static List<String> startingItems;
-	public static int singleBiomeID;
-	public static int islandBiomeID;
-	public static int islandBiomeRange;
-	public static int islandYSpawn;
-	public static String bottomBlock;
-	public static String fillBlock;
-	public static int cloudHeight;
-	public static int horizonHeight;
-	public static boolean spawnBedrock;
-	public static boolean replaceBedrock;
-	public static boolean cmdBlockAuto;
-	public static String cmdBlockType;
-	public static String cmdBlockCommand;
-	public static String cmdBlockDir;
-	public static int cmdBlockX;
-	public static int cmdBlockY;
-	public static int cmdBlockZ;
-	public static List<String> worldLoadCmds;
-	public static boolean autoCreate;
-	public static boolean allowIslandCreation;
-	public static boolean resetInventory;
-
-	// Grass
-	public static boolean enableGrassIsland;
-	public static boolean spawnTree;
-	public static boolean replaceDirt;
-
-	// Sand
-	public static boolean enableSandIsland;
-	public static boolean spawnCactus;
-	public static boolean redSand;
-
-	// Snow
-	public static boolean enableSnowIsland;
-	public static boolean spawnIgloo;
-	public static boolean spawnPumpkins;
-
-	// Wood
-	public static boolean enableWoodIsland;
-	public static boolean spawnString;
-	public static boolean spawnWater;
-	public static int woodMeta;
-
-	// GOG
-	public static boolean enableGOGIsland;
-
-	public static List<IConfigElement> getConfigElements() {
-		List<IConfigElement> list = new ArrayList<IConfigElement>();
-
-		list.addAll(new ConfigElement(config.getCategory(Configuration.CATEGORY_GENERAL)).getChildElements());
-		list.addAll(new ConfigElement(config.getCategory("islands")).getChildElements());
-		list.addAll(new ConfigElement(config.getCategory("startingInv")).getChildElements());
-
-		return list;
+		public enum WorldGenType {
+			VOID, OVERWORLD, SUPERFLAT
+		}
 	}
 
-	public static void setConfigSettings() {
-		startingItems = new ArrayList<String>();
+	@Config.Comment("Config Settings for the world generation")
+	public static IslandSettings islandSettings = new IslandSettings();
 
-		worldSpawnType = config.get(Configuration.CATEGORY_GENERAL, "WorldSpawnType", "random",
-				"Valids are random, sand, snow, wood, grass, or others added by addons").getString();
+	public static class IslandSettings {
+		@Config.Comment("Valids are random, sand, snow, wood, grass, gog, or others added by addons")
+		public String islandSpawnType = "random";
+		@Config.Comment("Distance between islands")
+		public int islandDistance = 1000;
+		@Config.Comment("Width of islands")
+		public int islandSize = 3;
+		@Config.Comment("Spawn a chest on the island")
+		public boolean spawnChest = false;
+		@Config.Comment("Start the world in one chunk mode")
+		public boolean oneChunk = false;
+		@Config.Comment("Starting items given to new players")
+		public String[] startingItems = emptyFilledArray(36);
+		@Config.Comment("Biome used for islands")
+		public int islandBiomeID = -1;
+		@Config.Comment("Biome range (width) used for islands")
+		public int islandBiomeRange = 0;
+		@Config.Comment("Y Level to spawn islands at (Set to 2 above where you want the ground block)")
+		public int islandYLevel = 88;
+		@Config.Comment("Type of block to spawn under islands")
+		public BottomBlockType bottomBlockType = BottomBlockType.BEDROCK;
+		@Config.Comment("Automatically give new players islands")
+		public boolean autoCreate = false;
+		@Config.Comment("Allow players to create or reset their islands")
+		public boolean allowIslandCreation = false;
+		@Config.Comment("Reset players inventory with the starting inventory")
+		public boolean resetInventory = true;
 
-		islandDistance = config.get("islands", "Island Gap Distance", 1000).getInt(1000);
+		@Config.Comment("Settings for the grass island")
+		public GrassIslandSettings grassSettings = new GrassIslandSettings();
 
-		islandResetDistance = Math.min(
-				config.get("islands", "Island Reset Radius", 500, "Max is half of Island Distance").getInt(500),
-				islandDistance / 2);
+		public class GrassIslandSettings {
+			@Config.Comment("Allow grass island to be used")
+			public boolean enableGrassIsland = true;
+			@Config.Comment("Spawn a tree")
+			public boolean spawnTree = true;
+			@Config.Comment("Type of grass/dirt")
+			public GrassBlockType grassBlockType = GrassBlockType.GRASS;
+		}
 
-		islandSize = config.get("islands", "Island Width/Length", 3, "Works best with odd values").getInt(3);
+		public enum GrassBlockType {
+			GRASS, DIRT, COARSEDIRT
+		}
 
-		spawnChest = config.get("islands", "Spawn Chest", false, "Spawn a chest on island").getBoolean(false);
-		spawnBedrock = config.get("islands", "Spawn Bedrock", true, "Spawns bedrock under the platform")
-				.getBoolean(true);
-		replaceBedrock = config
-				.get("islands", "Replace Bedrock", false,
-						"Replaces bedrock under the platform with a secondary block (ONLY WORKS IF SPAWN BEDROCK IS SET TO FALSE)")
-				.getBoolean(false);
+		@Config.Comment("Settings for the sand island")
+		public SandIslandSettings sandSettings = new SandIslandSettings();
 
-		autoCreate = config.get("islands", "Automatic Create Island", false,
-				"Create a new island for each player that logs in immediately").getBoolean(false);
+		public class SandIslandSettings {
+			@Config.Comment("Allow sand island to be used")
+			public boolean enableSandIsland = true;
+			@Config.Comment("Spawn a cactus")
+			public boolean spawnCactus = true;
+			@Config.Comment("Type of sand")
+			public SandBlockType sandBlockType = SandBlockType.RED;
+		}
 
-		allowIslandCreation = config
-				.get("islands", "Allow Island Creation", true,
-						"Allows the player to create their own island (Do not turn off if Automatic Create Island is not on")
-				.getBoolean(true);
+		public enum SandBlockType {
+			NORMAL, RED
+		}
 
-		resetInventory = config
-				.get("islands", "Reset Inventory On New Island", true,
-						"Replace players inventories when they join a new island (Uses the starting inventory config settings or clears it)")
-				.getBoolean(true);
+		@Config.Comment("Settings for the snow island")
+		public SnowIslandSettings snowSettings = new SnowIslandSettings();
 
-		netherVoid = config.get("islands", "Nether Void World", true, "Nether generates with nothing").getBoolean(true);
-		netherVoidStructures = config
-				.get("islands", "Nether Void Structures", true, "Nether generates structures (Has to be void too)")
-				.getBoolean(true);
+		public class SnowIslandSettings {
 
-		commandName = config.get("islands", "Name For Command", "island").getString();
+			@Config.Comment("Allow snow island to be used")
+			public boolean enableSnowIsland = true;
+			@Config.Comment("Spawn pumpkins")
+			public boolean spawnPumpkins = true;
+			@Config.Comment("Spawn an igloo")
+			public boolean spawnIgloo = false;
+		}
 
-		oneChunk = config.get("islands", "One Chunk Challenge", false,
-				"Required before world creation as it changes the spawn platform").getBoolean(false);
+		@Config.Comment("Settings for the wood island")
+		public WoodIslandSettings woodSettings = new WoodIslandSettings();
 
-		oneChunkCommandAllowed = config
-				.get("islands", "Allow One Chunk Mode", false, "Allows for one chunk mode to be turned on in-game")
-				.getBoolean(false);
-		singleBiomeID = config
-				.get("islands", "Single Biome ID", -1,
-						"Sets the biome used for generation in void world (Look up biome ids on the wiki) -1=default")
-				.getInt(-1);
-		islandBiomeID = config
-				.get("islands", "Island Biome ID", -1,
-						"Sets the biome used for each starting island area in void world (Look up biome ids on the wiki) -1=default")
-				.getInt(-1);
-		islandBiomeRange = config
-				.get("islands", "Island Biome Range", 0,
-						"Range for the island biome change config to affect (Used as width for area changed)")
-				.getInt(0);
-		islandYSpawn = config.get("islands", "Island Y Spawn", 88,
-				"Y Coord for islands to spawn (Set to 2 above where you want the ground block)").getInt(88);
-		cloudHeight = config.get("islands", "Cloud Height (Void)", 32, "Sets the cloud height in the void world type")
-				.getInt(32);
-		horizonHeight = config
-				.get("islands", "Horizon Height (Void)", 40, "Sets the height where skybox is darker (Ex: in caves)")
-				.getInt(40);
-		overworldGen = config
-				.get("islands", "Generate As Overworld", false,
-						"Uses default generation instead of void and follows the Single Biome ID config")
-				.getBoolean(false);
+		public class WoodIslandSettings {
+			@Config.Comment("Allow wood island to be used")
+			public boolean enableWoodIsland = true;
+			@Config.Comment("Spawn water")
+			public boolean spawnWater = true;
+			@Config.Comment("Spawn string")
+			public boolean spawnString = true;
+			@Config.Comment("Type of wood")
+			public WoodBlockType woodBlockType = WoodBlockType.DARKOAK;
+		}
 
-		bottomBlock = config
-				.get("islands", "Bottom Block (Void)", "minecraft:air", "Sets the bottom layer in the void world")
-				.getString();
-		fillBlock = config
-				.get("islands", "Fill Block (Void)", "minecraft:air",
-						"Sets the fill layers from the island Y Spawn down to the the bottom layer in the void world")
-				.getString();
+		public enum WoodBlockType {
+			OAK, SPRUCE, BIRCH, JUNGLE, ACACIA, DARKOAK
+		}
 
-		cmdBlockType = config
-				.get("islands", "(Command Block) Type", "none",
-						"Sets the type of command block to spawn. Valids are none, impulse, chain, repeating")
-				.getString();
-		cmdBlockCommand = config.get("islands", "(Command Block) Command To Execute", "",
-				"Sets the command to be run by the command block").getString();
-		cmdBlockAuto = config.get("islands", "(Command Block) Always Active", true,
-				"Sets the command block to be always active, or require redstone if false").getBoolean();
-		cmdBlockDir = config
-				.get("islands", "(Command Block) Direction Facing", "down",
-						"Sets the direction for the command block to face. Valids are north, south, west, east, up, down")
-				.getString();
-		cmdBlockX = config.get("islands", "(Command Block) X Pos", 0, "Offset from the center block above the bedrock")
-				.getInt();
-		cmdBlockY = config.get("islands", "(Command Block) Y Pos", 0, "Offset from the center block above the bedrock")
-				.getInt();
-		cmdBlockZ = config.get("islands", "(Command Block) Z Pos", 0, "Offset from the center block above the bedrock")
-				.getInt();
+		@Config.Comment("Settings for the Garden of Glass island (Requires Botania and Garden of Glass!)")
+		public GoGSettings gogSettings = new GoGSettings();
 
-		String[] array = new String[] { "" };
+		public class GoGSettings {
 
-		worldLoadCmds = Arrays.asList(
-				config.getStringList("World Load Commands", "islands", array, "List of commands to run on world load"));
+			@Config.Comment("Allow garden of glass island to be used")
+			public boolean enableGoGIsland = true;
+		}
 
-		array = new String[36];
-		for (int i = 0; i < 36; i++)
-			array[i] = "";
-
-		startingItems = Arrays.asList(config.getStringList("Starting Inventory", "startingInv", array,
-				"The starting inventory Format: modid:itemid:meta*amt (All parameters required)"));
-		// Grass
-		enableGrassIsland = config.get("islands", "Enable Grass Island", true, "Allows grass island to be generated")
-				.getBoolean(true);
-		spawnTree = config.get("islands", "Spawn Tree (Grass)", true, "Spawns a tree on the island").getBoolean(true);
-		replaceDirt = config.get("islands", "Dirt Instead", false, "Replaces grass with dirt").getBoolean(false);
-
-		// Sand
-		enableSandIsland = config.get("islands", "Enable Sand Island", true, "Allows sand island to be generated")
-				.getBoolean(true);
-		spawnCactus = config.get("islands", "Spawn Cactus (Sand)", true, "Spawns a cactus on the island")
-				.getBoolean(true);
-		redSand = config
-				.get("islands", "Red Sand? (Sand)", true, "True sets sand type to red sand, false for normal sand")
-				.getBoolean(true);
-
-		// Snow
-		enableSnowIsland = config.get("islands", "Enable Snow Island", true, "Allows snow island to be generated")
-				.getBoolean(true);
-		spawnIgloo = config.get("islands", "Spawn Igloo (Snow)", false, "Spawn an igloo covering on island")
-				.getBoolean(false);
-		spawnPumpkins = config.get("islands", "Spawn Pumpkins (Snow)", true, "Spawns 2 pumpkins on the island")
-				.getBoolean(true);
-		// Wood
-		enableWoodIsland = config.get("islands", "Enable Wood Island", true, "Allows wood island to be generated")
-				.getBoolean(true);
-		spawnWater = config.get("islands", "Spawn Water (Wood)", true, "Spawns a water source in middle of the island")
-				.getBoolean(true);
-		spawnString = config.get("islands", "Spawn String (Wood)", true, "Spawns a piece of string on the island")
-				.getBoolean(true);
-		woodMeta = config.get("islands", "Wood Metadata (Wood)", 5, "Sets metadata of wood spawned on the island")
-				.getInt();
-		// GoG
-		enableGOGIsland = config
-				.get("islands", "Enable GoG Island", false,
-						"(id=gog) Allows Garden of Glass island to be generated. Only works if Botania and Garden of Glass are installed")
-				.getBoolean(false);
-
-		if (config.hasChanged())
-			config.save();
+		public enum BottomBlockType {
+			BEDROCK, SECONDARYBLOCK
+		}
 	}
 
-	public static void loadConfigThenSave(FMLPreInitializationEvent e) {
-		config = new Configuration(e.getSuggestedConfigurationFile());
+	@Config.Comment("Config Settings for the world generation")
+	public static CommandSettings commandSettings = new CommandSettings();
 
-		config.load();
-		setConfigSettings();
-		config.save();
+	public static class CommandSettings {
+		@Config.Comment("Name of the main command")
+		public String commandName = "island";
+		@Config.Comment("Allow the one chunk command to be used")
+		public boolean oneChunkCommandAllowed = false;
+
+		@Config.Comment("Offset position for command block from the center block above the bedrock")
+		public CommandBlockPos commandBlockPos = new CommandBlockPos();
+
+		public class CommandBlockPos {
+
+			@Config.Comment("The x coordinate (Offset from the center block above the bedrock)")
+			public int x = 0;
+
+			@Config.Comment("The y coordinate (Offset from the center block above the bedrock)")
+			public int y = 0;
+
+			@Config.Comment("The z coordinate (Offset from the center block above the bedrock)")
+			public int z = 0;
+		}
+
+		@Config.Comment("Type of command block to spawn")
+		public CommandBlockType commandBlockType = CommandBlockType.NONE;
+		@Config.Comment("Run always or require redstone")
+		public boolean commandBlockAuto = false;
+		@Config.Comment("Command for the command block to run")
+		public String commandBlockCommand = "";
+		@Config.Comment("Command Block direction to face")
+		public EnumFacing commandBlockDirection = EnumFacing.UP;
+		@Config.Comment("Commands to run when the world loads")
+		public String[] worldLoadCommands = emptyFilledArray(0);
+
+		public enum CommandBlockType {
+			NONE, IMPULSE, REPEATING, CHAIN
+		}
 	}
 
-	public static void reloadConfigs() {
-		setConfigSettings();
-		if (config.hasChanged())
-			config.save();
+	@SubscribeEvent
+	public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
+		if (event.getModID().equals(References.ModID)) {
+			ConfigManager.sync(References.ModID, Config.Type.INSTANCE);
+		}
+	}
+	
+	public static String[] emptyFilledArray(int length)
+	{
+		String[] array = new String[length];
+		Arrays.fill(array, "");
+		return array;
 	}
 }

@@ -36,10 +36,10 @@ public class GoGSupport {
 			EntityPlayer player = event.getEntityPlayer();
 			IslandPos pos = IslandManager.getPlayerIsland(player.getGameProfile().getId());
 			if (pos != null) {
-				int posX = pos.getX() * ConfigOptions.islandDistance;
-				int posY = pos.getY() * ConfigOptions.islandDistance;
-				if (pos.getType().equals("gog") && Math.abs(player.posX - posX) < ConfigOptions.islandDistance / 2
-						&& Math.abs(player.posZ - posY) < ConfigOptions.islandDistance / 2) {
+				int posX = pos.getX() * ConfigOptions.islandSettings.islandDistance;
+				int posY = pos.getY() * ConfigOptions.islandSettings.islandDistance;
+				if (pos.getType().equals("gog") && Math.abs(player.posX - posX) < ConfigOptions.islandSettings.islandDistance / 2
+						&& Math.abs(player.posZ - posY) < ConfigOptions.islandSettings.islandDistance / 2) {
 					ItemStack equipped = event.getItemStack();
 					if (equipped.isEmpty() && event.getEntityPlayer().isSneaking()) {
 						Block block = event.getWorld().getBlockState(event.getPos()).getBlock();

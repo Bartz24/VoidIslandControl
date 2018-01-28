@@ -11,7 +11,8 @@ public class ChunkGeneratorEndVoid extends ChunkGeneratorEnd {
 	World world;
 
 	public ChunkGeneratorEndVoid(World par1World, long par2) {
-		super(par1World, ConfigOptions.endVoidStructures, par2, new BlockPos(0, ConfigOptions.islandYSpawn, 0));
+		super(par1World, ConfigOptions.worldGenSettings.endVoidStructures, par2,
+				new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0));
 		world = par1World;
 	}
 

@@ -41,10 +41,10 @@ public class PlatformCommand extends CommandBase implements ICommand {
 
 	public PlatformCommand() {
 		aliases = new ArrayList<String>();
-		if (ConfigOptions.commandName.equals("island")) {
+		if (ConfigOptions.commandSettings.commandName.equals("island")) {
 			aliases.add("island");
 		} else
-			aliases.add(ConfigOptions.commandName);
+			aliases.add(ConfigOptions.commandSettings.commandName);
 
 	}
 
@@ -140,11 +140,11 @@ public class PlatformCommand extends CommandBase implements ICommand {
 				visit(player, args);
 				MinecraftForge.EVENT_BUS.post(
 						new IslandVisitEvent(player, IslandManager.getPlayerIsland(player.getGameProfile().getId())));
-			}  else if (subCommand.equals("kick")) {
+			} else if (subCommand.equals("kick")) {
 				kick(player, args);
 			} else if (subCommand.equals("onechunk")) {
 
-				if (!ConfigOptions.oneChunkCommandAllowed) {
+				if (!ConfigOptions.commandSettings.oneChunkCommandAllowed) {
 					player.sendMessage(new TextComponentString("This command is not allowed!"));
 					return;
 
@@ -179,7 +179,7 @@ public class PlatformCommand extends CommandBase implements ICommand {
 			player.sendMessage(new TextComponentString("Can't use this command in this mode."));
 			return;
 		}
-		if (IslandManager.initialIslandDistance != ConfigOptions.islandDistance) {
+		if (IslandManager.initialIslandDistance != ConfigOptions.islandSettings.islandDistance) {
 			player.sendMessage(new TextComponentString("This isn't going to work. The island distance has changed!"));
 			return;
 		}
@@ -198,8 +198,8 @@ public class PlatformCommand extends CommandBase implements ICommand {
 			return;
 		}
 
-		BlockPos visitPos = new BlockPos(isPos.getX() * ConfigOptions.islandDistance, ConfigOptions.islandYSpawn,
-				isPos.getY() * ConfigOptions.islandDistance);
+		BlockPos visitPos = new BlockPos(isPos.getX() * ConfigOptions.islandSettings.islandDistance,
+				ConfigOptions.islandSettings.islandYLevel, isPos.getY() * ConfigOptions.islandSettings.islandDistance);
 
 		IslandManager.setVisitLoc(player, isPos.getX(), isPos.getY());
 		player.setGameType(GameType.SPECTATOR);
@@ -256,13 +256,13 @@ public class PlatformCommand extends CommandBase implements ICommand {
 			item.posZ = player.posZ;
 			player.world.spawnEntity(item);
 		}
-		EventHandler.spawnPlayer(player2, new BlockPos(0, ConfigOptions.islandYSpawn, 0), false);
+		EventHandler.spawnPlayer(player2, new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0), false);
 		player2.sendMessage(new TextComponentString("You have been kicked..."));
 
 	}
 
 	public static void reset(EntityPlayerMP player, String[] args, World world) throws CommandException {
-		if (!ConfigOptions.allowIslandCreation) {
+		if (!ConfigOptions.islandSettings.allowIslandCreation) {
 			player.sendMessage(new TextComponentString(TextFormatting.RED + "Not allowed to create islands!"));
 			return;
 		}
@@ -295,17 +295,17 @@ public class PlatformCommand extends CommandBase implements ICommand {
 
 					if (player.dimension != 0)
 						player.changeDimension(0);
-					EventHandler.spawnPlayer(player, new BlockPos(0, ConfigOptions.islandYSpawn, 0), i);
+					EventHandler.spawnPlayer(player, new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0), i);
 				}
 			} else {
-				EventHandler.createSpawn(player, world, new BlockPos(0, ConfigOptions.islandYSpawn, 0));
+				EventHandler.createSpawn(player, world, new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0));
 			}
 			for (EntityPlayerMP p : players.getPlayers()) {
 				p.inventory.clear();
 
 				if (player.dimension != 0)
 					player.changeDimension(0);
-				EventHandler.spawnPlayer(p, new BlockPos(0, ConfigOptions.islandYSpawn, 0), false);
+				EventHandler.spawnPlayer(p, new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0), false);
 				player.sendMessage(new TextComponentString("Chunk Reset!"));
 			}
 		}
@@ -323,8 +323,8 @@ public class PlatformCommand extends CommandBase implements ICommand {
 				+ " : Leave your island, clear inventory, and go to spawn.\n      (If you are the last person, no one can claim that island again.)"));
 
 		player.sendMessage(new TextComponentString(TextFormatting.RED + "home" + TextFormatting.WHITE
-				+ " : Teleport back to your home island. Must be at least " + ConfigOptions.islandDistance / 2
-				+ " blocks away."));
+				+ " : Teleport back to your home island. Must be at least "
+				+ ConfigOptions.islandSettings.islandDistance / 2 + " blocks away."));
 
 		player.sendMessage(new TextComponentString(
 				TextFormatting.RED + "spawn" + TextFormatting.WHITE + " : Teleport back to spawn (0, 0)."));
@@ -335,7 +335,7 @@ public class PlatformCommand extends CommandBase implements ICommand {
 
 		player.sendMessage(new TextComponentString(TextFormatting.RED + "onechunk" + TextFormatting.WHITE
 				+ " : Play in one chunk, on one island. Also resets the spawn chunk."
-				+ (ConfigOptions.oneChunkCommandAllowed ? ""
+				+ (ConfigOptions.commandSettings.oneChunkCommandAllowed ? ""
 						: TextFormatting.RED
 								+ "\n THE COMMAND IS NOT ALLOWED TO BE USED. SET THE CONFIG OPTION TO TRUE.")));
 
@@ -344,7 +344,7 @@ public class PlatformCommand extends CommandBase implements ICommand {
 	}
 
 	public static void newPlatform(EntityPlayerMP player, String[] args) throws CommandException {
-		if ((args.length > 1 && !args[1].equals("bypass")) && !ConfigOptions.allowIslandCreation) {
+		if ((args.length > 1 && !args[1].equals("bypass")) && !ConfigOptions.islandSettings.allowIslandCreation) {
 			player.sendMessage(new TextComponentString(TextFormatting.RED + "Not allowed to create islands!"));
 			return;
 		}
@@ -356,7 +356,7 @@ public class PlatformCommand extends CommandBase implements ICommand {
 			player.sendMessage(new TextComponentString("Can't use this command in this mode."));
 			return;
 		}
-		if (IslandManager.initialIslandDistance != ConfigOptions.islandDistance) {
+		if (IslandManager.initialIslandDistance != ConfigOptions.islandSettings.islandDistance) {
 			player.sendMessage(new TextComponentString("This isn't going to work. The island distance has changed!"));
 			return;
 		}
@@ -370,7 +370,7 @@ public class PlatformCommand extends CommandBase implements ICommand {
 		if (args.length > 1 && args[1].equals("bypass"))
 			args = new String[] { args[0] };
 
-		if (args.length > 1 && ConfigOptions.worldSpawnType.equals("random")) {
+		if (args.length > 1 && ConfigOptions.islandSettings.islandSpawnType.equals("random")) {
 
 			Integer i = -1;
 
@@ -385,8 +385,11 @@ public class PlatformCommand extends CommandBase implements ICommand {
 				if (player.dimension != 0)
 					player.changeDimension(0);
 
-				EventHandler.spawnPlayer(player, new BlockPos(position.getX() * ConfigOptions.islandDistance,
-						ConfigOptions.islandYSpawn, position.getY() * ConfigOptions.islandDistance), i);
+				EventHandler.spawnPlayer(player,
+						new BlockPos(position.getX() * ConfigOptions.islandSettings.islandDistance,
+								ConfigOptions.islandSettings.islandYLevel,
+								position.getY() * ConfigOptions.islandSettings.islandDistance),
+						i);
 			}
 		} else {
 			if (args.length > 1) {
@@ -395,8 +398,11 @@ public class PlatformCommand extends CommandBase implements ICommand {
 
 			if (player.dimension != 0)
 				player.changeDimension(0);
-			EventHandler.spawnPlayer(player, new BlockPos(position.getX() * ConfigOptions.islandDistance,
-					ConfigOptions.islandYSpawn, position.getY() * ConfigOptions.islandDistance), true);
+			EventHandler.spawnPlayer(player,
+					new BlockPos(position.getX() * ConfigOptions.islandSettings.islandDistance,
+							ConfigOptions.islandSettings.islandYLevel,
+							position.getY() * ConfigOptions.islandSettings.islandDistance),
+					true);
 		}
 		if (IslandManager.hasVisitLoc(player)) {
 			player.setGameType(GameType.SURVIVAL);
@@ -413,7 +419,7 @@ public class PlatformCommand extends CommandBase implements ICommand {
 			player.sendMessage(new TextComponentString("Can't use this command in this mode."));
 			return;
 		}
-		if (IslandManager.initialIslandDistance != ConfigOptions.islandDistance) {
+		if (IslandManager.initialIslandDistance != ConfigOptions.islandSettings.islandDistance) {
 			player.sendMessage(new TextComponentString("This isn't going to work. The island distance has changed!"));
 			return;
 		}
@@ -470,13 +476,15 @@ public class PlatformCommand extends CommandBase implements ICommand {
 
 		if (player.dimension != 0)
 			player.changeDimension(0);
-		IslandManager.tpPlayerToPosSpawn(player, new BlockPos(position.getX() * ConfigOptions.islandDistance,
-				ConfigOptions.islandYSpawn, position.getY() * ConfigOptions.islandDistance));
+		IslandManager.tpPlayerToPosSpawn(player,
+				new BlockPos(position.getX() * ConfigOptions.islandSettings.islandDistance,
+						ConfigOptions.islandSettings.islandYLevel,
+						position.getY() * ConfigOptions.islandSettings.islandDistance));
 
 	}
 
 	public static void leavePlatform(EntityPlayerMP player, String[] args) throws CommandException {
-		if (!ConfigOptions.allowIslandCreation) {
+		if (!ConfigOptions.islandSettings.allowIslandCreation) {
 			player.sendMessage(new TextComponentString(TextFormatting.RED + "Not allowed to create islands!"));
 			return;
 		}
@@ -488,7 +496,7 @@ public class PlatformCommand extends CommandBase implements ICommand {
 			player.sendMessage(new TextComponentString("Can't use this command in this mode."));
 			return;
 		}
-		if (IslandManager.initialIslandDistance != ConfigOptions.islandDistance) {
+		if (IslandManager.initialIslandDistance != ConfigOptions.islandSettings.islandDistance) {
 			player.sendMessage(new TextComponentString("This isn't going to work. The island distance has changed!"));
 			return;
 		}
@@ -510,7 +518,7 @@ public class PlatformCommand extends CommandBase implements ICommand {
 
 		if (player.dimension != 0)
 			player.changeDimension(0);
-		IslandManager.tpPlayerToPosSpawn(player, new BlockPos(0, ConfigOptions.islandYSpawn, 0));
+		IslandManager.tpPlayerToPosSpawn(player, new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0));
 	}
 
 	public static void tpHome(EntityPlayerMP player, String[] args) throws CommandException {
@@ -522,7 +530,7 @@ public class PlatformCommand extends CommandBase implements ICommand {
 			player.sendMessage(new TextComponentString("Can't use this command in this mode."));
 			return;
 		}
-		if (IslandManager.initialIslandDistance != ConfigOptions.islandDistance) {
+		if (IslandManager.initialIslandDistance != ConfigOptions.islandSettings.islandDistance) {
 			player.sendMessage(new TextComponentString("This isn't going to work. The island distance has changed!"));
 			return;
 		}
@@ -534,13 +542,13 @@ public class PlatformCommand extends CommandBase implements ICommand {
 			return;
 		}
 
-		BlockPos home = new BlockPos(isPos.getX() * ConfigOptions.islandDistance, ConfigOptions.islandYSpawn,
-				isPos.getY() * ConfigOptions.islandDistance);
+		BlockPos home = new BlockPos(isPos.getX() * ConfigOptions.islandSettings.islandDistance,
+				ConfigOptions.islandSettings.islandYLevel, isPos.getY() * ConfigOptions.islandSettings.islandDistance);
 
-		if (Math.hypot(player.posX - home.getX() - 0.5, player.posZ - home.getZ() - 0.5) < ConfigOptions.islandDistance
-				/ 2) {
+		if (Math.hypot(player.posX - home.getX() - 0.5,
+				player.posZ - home.getZ() - 0.5) < ConfigOptions.islandSettings.islandDistance / 2) {
 			player.sendMessage(new TextComponentString("You are too close to home!\nYou must be at least "
-					+ (ConfigOptions.islandDistance / 2) + " blocks away!"));
+					+ (ConfigOptions.islandSettings.islandDistance / 2) + " blocks away!"));
 			return;
 		}
 
@@ -568,7 +576,7 @@ public class PlatformCommand extends CommandBase implements ICommand {
 
 		if (player.dimension != 0)
 			player.changeDimension(0);
-		IslandManager.tpPlayerToPos(player, new BlockPos(0, ConfigOptions.islandYSpawn, 0));
+		IslandManager.tpPlayerToPos(player, new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0));
 	}
 
 	@Override
@@ -578,6 +586,6 @@ public class PlatformCommand extends CommandBase implements ICommand {
 
 	@Override
 	public String getUsage(ICommandSender sender) {
-		return ConfigOptions.commandName;
+		return ConfigOptions.commandSettings.commandName;
 	}
 }

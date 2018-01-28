@@ -17,7 +17,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
-@Mod(modid = References.ModID, name = References.ModName, useMetadata = true, guiFactory = "com.bartz24.voidislandcontrol.config.ConfigGuiFactory")
+@Mod(modid = References.ModID, name = References.ModName, useMetadata = true)
 public class VoidIslandControl {
 	@SidedProxy(clientSide = "com.bartz24.voidislandcontrol.proxy.ClientProxy", serverSide = "com.bartz24.voidislandcontrol.proxy.ServerProxy")
 	public static CommonProxy proxy;
@@ -38,7 +38,7 @@ public class VoidIslandControl {
 			IslandManager.CurrentIslandsList.clear();
 			IslandManager.spawnedPlayers.clear();
 			IslandManager.worldOneChunk = false;
-			IslandManager.initialIslandDistance = ConfigOptions.islandDistance;
+			IslandManager.initialIslandDistance = ConfigOptions.islandSettings.islandDistance;
 			World world = event.getServer().getEntityWorld();
 			if (!world.isRemote) {
 				VoidIslandControlSaveData worldData = (VoidIslandControlSaveData) world

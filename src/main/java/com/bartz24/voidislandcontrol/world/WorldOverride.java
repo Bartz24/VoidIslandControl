@@ -10,7 +10,7 @@ public class WorldOverride
 {
 	public static void registerWorldProviders()
 	{
-		if (ConfigOptions.netherVoid)
+		if (ConfigOptions.worldGenSettings.netherVoid)
 		{
 			try
 			{
@@ -22,7 +22,7 @@ public class WorldOverride
 				VoidIslandControl.logger.error("Could not override the nether dimension to be void!");
 			}
 		}
-		if (ConfigOptions.endVoid)
+		if (ConfigOptions.worldGenSettings.endVoid)
 		{
 			try
 			{

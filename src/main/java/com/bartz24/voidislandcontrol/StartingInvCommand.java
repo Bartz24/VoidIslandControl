@@ -47,6 +47,7 @@ public class StartingInvCommand extends CommandBase implements ICommand {
 		World world = sender.getEntityWorld();
 		EntityPlayerMP player = (EntityPlayerMP) world.getPlayerEntityByName(sender.getCommandSenderEntity().getName());
 
+		ConfigOptions.islandSettings.startingItems = new String[36];
 		for (int i = 0; i < 36; i++) {
 			String item = "";
 			ItemStack stack = player.inventory.getStackInSlot(i);
@@ -55,14 +56,11 @@ public class StartingInvCommand extends CommandBase implements ICommand {
 				int meta = stack.getMetadata();
 				String name = Item.REGISTRY.getNameForObject(stack.getItem()).toString();
 
-				ConfigOptions.startingItems.set(i, name + ":" + meta + "*" + amt);
-			}
-			else
-			{
-				ConfigOptions.startingItems.set(i, "");				
+				ConfigOptions.islandSettings.startingItems[i] = name + ":" + meta + "*" + amt;
+			} else {
+				ConfigOptions.islandSettings.startingItems[i] = "";
 			}
 		}
-		ConfigOptions.reloadConfigs();
 	}
 
 	@Override
@@ -72,6 +70,6 @@ public class StartingInvCommand extends CommandBase implements ICommand {
 
 	@Override
 	public String getUsage(ICommandSender sender) {
-		return ConfigOptions.commandName;
+		return "";
 	}
 }

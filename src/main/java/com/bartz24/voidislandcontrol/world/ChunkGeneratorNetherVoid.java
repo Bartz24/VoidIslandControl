@@ -16,7 +16,7 @@ public class ChunkGeneratorNetherVoid extends ChunkGeneratorHell
 	World world;
 	public ChunkGeneratorNetherVoid(World par1World, long par2)
 	{
-		super(par1World, ConfigOptions.netherVoidStructures, par2);
+		super(par1World, ConfigOptions.worldGenSettings.netherVoidStructures, par2);
 		world = par1World;
 	}
 

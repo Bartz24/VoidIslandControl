@@ -29,7 +29,7 @@ public class IslandManager {
 
 	public static boolean worldOneChunk = false;
 	public static boolean worldLoaded = false;
-	public static int initialIslandDistance = ConfigOptions.islandDistance;
+	public static int initialIslandDistance = ConfigOptions.islandSettings.islandDistance;
 
 	public static void registerIsland(IslandGen gen) {
 		IslandGenerations.add(gen);
@@ -121,12 +121,12 @@ public class IslandManager {
 	}
 
 	public static void setStartingInv(EntityPlayerMP player) {
-		if (ConfigOptions.resetInventory) {
+		if (ConfigOptions.islandSettings.resetInventory) {
 			player.inventory.clear();
 
 			try {
-				for (int i = 0; i < ConfigOptions.startingItems.size(); i++) {
-					String s = ConfigOptions.startingItems.get(i);
+				for (int i = 0; i < Math.max(ConfigOptions.islandSettings.startingItems.length, 36); i++) {
+					String s = ConfigOptions.islandSettings.startingItems[i];
 					if (!Strings.isNullOrEmpty(s) && s.contains(":") && s.contains("*")) {
 						String trimmed = s.replaceAll(" ", "");
 						String itemName = trimmed.split(":")[0] + ":" + trimmed.split(":")[1];
