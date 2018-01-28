@@ -2,6 +2,8 @@ package com.bartz24.voidislandcontrol.world;
 
 import java.util.List;
 
+import com.bartz24.voidislandcontrol.config.ConfigOptions;
+
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -14,7 +16,7 @@ public class ChunkGeneratorNetherVoid extends ChunkGeneratorHell
 	World world;
 	public ChunkGeneratorNetherVoid(World par1World, long par2)
 	{
-		super(par1World, false, par2);
+		super(par1World, ConfigOptions.netherVoidStructures, par2);
 		world = par1World;
 	}
 
@@ -25,17 +27,6 @@ public class ChunkGeneratorNetherVoid extends ChunkGeneratorHell
 
 	@Override
 	public void buildSurfaces(int p_185937_1_, int p_185937_2_, ChunkPrimer primer)
-	{
-	}
-
-    public List<Biome.SpawnListEntry> getPossibleCreatures(EnumCreatureType creatureType, BlockPos pos)
-    {
-        Biome biome = world.getBiome(pos);
-        return biome.getSpawnableList(creatureType);
-    }
-
-	@Override
-	public void populate(int x, int z)
 	{
 	}
 }

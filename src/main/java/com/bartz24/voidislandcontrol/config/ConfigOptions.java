@@ -15,6 +15,9 @@ public class ConfigOptions {
 	public static String worldSpawnType;
 
 	public static boolean netherVoid;
+	public static boolean netherVoidStructures;
+	public static boolean endVoid;
+	public static boolean endVoidStructures;
 
 	public static String commandName;
 
@@ -34,7 +37,6 @@ public class ConfigOptions {
 	public static String fillBlock;
 	public static int cloudHeight;
 	public static int horizonHeight;
-	public static boolean netherPortalLink;
 	public static boolean spawnBedrock;
 	public static boolean replaceBedrock;
 	public static boolean cmdBlockAuto;
@@ -119,12 +121,11 @@ public class ConfigOptions {
 				.getBoolean(true);
 
 		netherVoid = config.get("islands", "Nether Void World", true, "Nether generates with nothing").getBoolean(true);
+		netherVoidStructures = config
+				.get("islands", "Nether Void Structures", true, "Nether generates structures (Has to be void too)")
+				.getBoolean(true);
 
 		commandName = config.get("islands", "Name For Command", "island").getString();
-		netherPortalLink = config
-				.get("islands", "1 to 1 Nether Portal", true,
-						"Nether Portal will link to the same position as in the overworld (Instead of 1/8 the position)")
-				.getBoolean(true);
 
 		oneChunk = config.get("islands", "One Chunk Challenge", false,
 				"Required before world creation as it changes the spawn platform").getBoolean(false);
@@ -133,10 +134,13 @@ public class ConfigOptions {
 				.get("islands", "Allow One Chunk Mode", false, "Allows for one chunk mode to be turned on in-game")
 				.getBoolean(false);
 		singleBiomeID = config
-				.get("islands", "Single Biome ID", -1, "Sets the biome used for generation in void world (Look up biome ids on the wiki) -1=default")
+				.get("islands", "Single Biome ID", -1,
+						"Sets the biome used for generation in void world (Look up biome ids on the wiki) -1=default")
 				.getInt(-1);
-		islandBiomeID = config.get("islands", "Island Biome ID", -1,
-				"Sets the biome used for each starting island area in void world (Look up biome ids on the wiki) -1=default").getInt(-1);
+		islandBiomeID = config
+				.get("islands", "Island Biome ID", -1,
+						"Sets the biome used for each starting island area in void world (Look up biome ids on the wiki) -1=default")
+				.getInt(-1);
 		islandBiomeRange = config
 				.get("islands", "Island Biome Range", 0,
 						"Range for the island biome change config to affect (Used as width for area changed)")

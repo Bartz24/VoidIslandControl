@@ -22,5 +22,17 @@ public class WorldOverride
 				VoidIslandControl.logger.error("Could not override the nether dimension to be void!");
 			}
 		}
+		if (ConfigOptions.endVoid)
+		{
+			try
+			{
+				DimensionManager.unregisterDimension(1);
+				DimensionManager.registerDimension(1, DimensionType.register("VoidEnd",
+						"_end", 1, WorldProviderEndVoid.class, true));
+			} catch (Exception e)
+			{
+				VoidIslandControl.logger.error("Could not override the end dimension to be void!");
+			}
+		}
 	}
 }

@@ -17,7 +17,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiCreateWorld;
 import net.minecraft.client.gui.GuiWorldSelection;
 import net.minecraft.command.CommandException;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntityCow;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -32,7 +31,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraftforge.client.event.GuiOpenEvent;
-import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.world.WorldEvent.Save;
 import net.minecraftforge.event.world.WorldEvent.Unload;
@@ -70,7 +68,8 @@ public class EventHandler {
 
 			if (player.getEntityWorld().getWorldInfo().getTerrainType() instanceof WorldTypeVoid
 					&& player.dimension == 0) {
-				if (!IslandManager.hasPlayerSpawned(player.getGameProfile().getId())) {
+				if (IslandManager.spawnedPlayers.size() == 0
+						&& !IslandManager.hasPlayerSpawned(player.getGameProfile().getId())) {
 					World world = player.getEntityWorld();
 					if (world.getSpawnPoint().getX() != 0 && world.getSpawnPoint().getZ() != 0)
 						world.setSpawnPoint(new BlockPos(0, ConfigOptions.islandYSpawn, 0));
@@ -257,23 +256,6 @@ public class EventHandler {
 	@SubscribeEvent
 	public void onUnload(Unload event) {
 		VoidIslandControlSaveData.setDirty(0);
-	}
-
-	@SubscribeEvent
-	public void onTravelToDimensionEvent(EntityTravelToDimensionEvent event) {
-		if (ConfigOptions.netherPortalLink) {
-			Entity entity = event.getEntity();
-			int dim = event.getDimension();
-
-			if ((dim != 0 && dim != -1) || (entity.dimension != 0 && entity.dimension != -1)) {
-				return;
-			}
-			PortalTeleporterNether tp = new PortalTeleporterNether();
-			entity = tp.travelToDimension(entity, entity.dimension == 0 ? -1 : 0, entity.getPosition(), 16, false);
-			if (entity.dimension != dim) {
-				event.setCanceled(true);
-			}
-		}
 	}
 
 	@SubscribeEvent
