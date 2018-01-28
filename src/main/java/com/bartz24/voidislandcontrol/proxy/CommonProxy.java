@@ -2,6 +2,7 @@ package com.bartz24.voidislandcontrol.proxy;
 
 import com.bartz24.voidislandcontrol.EventHandler;
 import com.bartz24.voidislandcontrol.IslandRegistry;
+import com.bartz24.voidislandcontrol.StructureLoader;
 import com.bartz24.voidislandcontrol.config.ConfigOptions;
 import com.bartz24.voidislandcontrol.world.GoGSupport;
 import com.bartz24.voidislandcontrol.world.WorldOverride;
@@ -14,6 +15,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public class CommonProxy {
 	public void preInit(FMLPreInitializationEvent e) {
+		StructureLoader.preInit(e);
 		new WorldTypeVoid();
 		IslandRegistry.initIslands();
 	}

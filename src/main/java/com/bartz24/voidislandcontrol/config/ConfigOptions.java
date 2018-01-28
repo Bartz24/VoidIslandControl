@@ -68,9 +68,14 @@ public class ConfigOptions {
 		@Config.Comment("Automatically give new players islands")
 		public boolean autoCreate = false;
 		@Config.Comment("Allow players to create or reset their islands")
-		public boolean allowIslandCreation = false;
+		public boolean allowIslandCreation = true;
 		@Config.Comment("Reset players inventory with the starting inventory")
 		public boolean resetInventory = true;
+		@Config.Comment("Custom islands using the structure block data. Files are to be placed in the "
+				+ References.ModID
+				+ "structures config folder. The names in this list should be the same as the structure names. "
+				+ "These names are the ids for the island type as well")
+		public String[] customIslands = emptyFilledArray(0);
 
 		@Config.Comment("Settings for the grass island")
 		public GrassIslandSettings grassSettings = new GrassIslandSettings();
@@ -195,9 +200,8 @@ public class ConfigOptions {
 			ConfigManager.sync(References.ModID, Config.Type.INSTANCE);
 		}
 	}
-	
-	public static String[] emptyFilledArray(int length)
-	{
+
+	public static String[] emptyFilledArray(int length) {
 		String[] array = new String[length];
 		Arrays.fill(array, "");
 		return array;

@@ -150,7 +150,7 @@ public class IslandManager {
 
 	public static void tpPlayerToPos(EntityPlayer player, BlockPos pos) {
 		if (!player.getEntityWorld().isAirBlock(pos) && !player.getEntityWorld().isAirBlock(pos.up())) {
-			pos = player.getEntityWorld().getTopSolidOrLiquidBlock(pos);
+			pos = player.getEntityWorld().getTopSolidOrLiquidBlock(pos.up(2));
 
 			player.sendMessage(new TextComponentString("Failed to spawn. Sent to top block of platform spawn."));
 		}

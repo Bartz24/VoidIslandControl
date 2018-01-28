@@ -17,7 +17,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
+import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.ConfigManager;
 
 public class StartingInvCommand extends CommandBase implements ICommand {
 	private List<String> aliases;
@@ -47,7 +50,7 @@ public class StartingInvCommand extends CommandBase implements ICommand {
 		World world = sender.getEntityWorld();
 		EntityPlayerMP player = (EntityPlayerMP) world.getPlayerEntityByName(sender.getCommandSenderEntity().getName());
 
-		ConfigOptions.islandSettings.startingItems = new String[36];
+		ConfigOptions.islandSettings.startingItems = ConfigOptions.emptyFilledArray(36);
 		for (int i = 0; i < 36; i++) {
 			String item = "";
 			ItemStack stack = player.inventory.getStackInSlot(i);
@@ -60,7 +63,9 @@ public class StartingInvCommand extends CommandBase implements ICommand {
 			} else {
 				ConfigOptions.islandSettings.startingItems[i] = "";
 			}
+			ConfigManager.sync(References.ModID, Config.Type.INSTANCE);
 		}
+		player.sendMessage(new TextComponentString("Starting Inventory config set!"));
 	}
 
 	@Override

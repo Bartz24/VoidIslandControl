@@ -160,7 +160,6 @@ public class EventHandler {
 		if (player instanceof EntityPlayerMP) {
 			EntityPlayerMP pmp = (EntityPlayerMP) player;
 			IslandManager.tpPlayerToPosSpawn(player, pos.up(4));
-			pmp.setSpawnPoint(pos, true);
 
 			IslandManager.setStartingInv(pmp);
 		}

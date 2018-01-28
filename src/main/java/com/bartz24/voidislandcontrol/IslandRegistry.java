@@ -10,9 +10,12 @@ import com.bartz24.voidislandcontrol.world.GoGSupport;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.structure.template.PlacementSettings;
+import net.minecraft.world.gen.structure.template.Template;
 import net.minecraftforge.fml.common.Loader;
 
 public class IslandRegistry {
@@ -216,6 +219,17 @@ public class IslandRegistry {
 				}
 			});
 		}
+
+		if (ConfigOptions.islandSettings.customIslands.length > 0) {
+			for (String s : ConfigOptions.islandSettings.customIslands) {
+				IslandManager.registerIsland(new IslandGen(s) {
+					public void generate(World world, BlockPos spawn) {
+						generateCustomIsland(s, world, spawn);
+						changeBiome(spawn.getX(), spawn.getZ(), world);
+					}
+				});
+			}
+		}
 	}
 
 	public static boolean isValidGoG() {
@@ -236,5 +250,15 @@ public class IslandRegistry {
 				}
 			}
 		}
+	}
+
+	private static void generateCustomIsland(String id, World world, BlockPos pos) {
+		Template t = StructureLoader.tempManager.get(world.getMinecraftServer(), new ResourceLocation(id));
+		if (t != null) {
+			BlockPos genPos = new BlockPos(pos.getX() - t.getSize().getX() / 2, pos.getY(),
+					pos.getZ() - t.getSize().getZ() / 2);
+			t.addBlocksToWorld(world, genPos, new PlacementSettings());
+		} else
+			world.setBlockState(pos.down(2), Blocks.BEDROCK.getDefaultState());
 	}
 }
