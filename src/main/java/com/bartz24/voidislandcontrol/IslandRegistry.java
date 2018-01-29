@@ -36,10 +36,13 @@ public class IslandRegistry {
 							switch (ConfigOptions.islandSettings.grassSettings.grassBlockType) {
 							case GRASS:
 								topBlock = Blocks.GRASS.getDefaultState();
+								break;
 							case DIRT:
 								topBlock = Blocks.DIRT.getDefaultState();
+								break;
 							case COARSEDIRT:
 								topBlock = Blocks.DIRT.getStateFromMeta(1);
+								break;
 							}
 							world.setBlockState(pos.down(3), topBlock, 2);
 							if (ConfigOptions.islandSettings.bottomBlockType == BottomBlockType.BEDROCK)

@@ -149,11 +149,17 @@ public class IslandManager {
 	}
 
 	public static void tpPlayerToPos(EntityPlayer player, BlockPos pos) {
-		if (!player.getEntityWorld().isAirBlock(pos) && !player.getEntityWorld().isAirBlock(pos.up())) {
-			pos = player.getEntityWorld().getTopSolidOrLiquidBlock(pos.up(2));
+		if (!ConfigOptions.islandSettings.forceSpawnAtOffset) {
+			if (!player.getEntityWorld().isAirBlock(pos) && !player.getEntityWorld().isAirBlock(pos.up())) {
+				pos = player.getEntityWorld().getTopSolidOrLiquidBlock(pos.up(2));
 
-			player.sendMessage(new TextComponentString("Failed to spawn. Sent to top block of platform spawn."));
-		}
+				player.sendMessage(new TextComponentString("Failed to spawn. Sent to top block of platform spawn."));
+			}
+		} else
+			pos = new BlockPos(ConfigOptions.islandSettings.forceSpawnOffset.x,
+					ConfigOptions.islandSettings.forceSpawnOffset.y, ConfigOptions.islandSettings.forceSpawnOffset.z)
+							.add(pos);
+
 		player.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 120, 20, false, false));
 
 		player.setPositionAndUpdate(pos.getX() + 0.5, pos.getY() + 2.6, pos.getZ() + 0.5);

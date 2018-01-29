@@ -45,7 +45,9 @@ public class ConfigOptions {
 	public static IslandSettings islandSettings = new IslandSettings();
 
 	public static class IslandSettings {
-		@Config.Comment("Valids are random, sand, snow, wood, grass, gog, or others added by addons")
+		@Config.Comment("This is for the island at 0,0! Valids are random, bedrock, sand, snow, wood, grass, gog, or others added by addons/custom islands")
+		public String islandMainSpawnType = "bedrock";
+		@Config.Comment("Valids are random, sand, snow, wood, grass, gog, or others added by addons/custom islands")
 		public String islandSpawnType = "random";
 		@Config.Comment("Distance between islands")
 		public int islandDistance = 1000;
@@ -76,6 +78,22 @@ public class ConfigOptions {
 				+ "structures config folder. The names in this list should be the same as the structure names. "
 				+ "These names are the ids for the island type as well")
 		public String[] customIslands = emptyFilledArray(0);
+		@Config.Comment("Forces players to spawn at the offset given by forceSpawnOffset")
+		public boolean forceSpawnAtOffset = false;
+		@Config.Comment("Offset position for players to spawn at (Only if forceSpawnAtOffset is TRUE)")
+		public ForceSpawnPos forceSpawnOffset = new ForceSpawnPos();
+
+		public class ForceSpawnPos {
+
+			@Config.Comment("The x coordinate")
+			public int x = 0;
+
+			@Config.Comment("The y coordinate")
+			public int y = 0;
+
+			@Config.Comment("The z coordinate")
+			public int z = 0;
+		}
 
 		@Config.Comment("Settings for the grass island")
 		public GrassIslandSettings grassSettings = new GrassIslandSettings();

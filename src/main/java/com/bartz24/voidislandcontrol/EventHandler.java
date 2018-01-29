@@ -173,7 +173,17 @@ public class EventHandler {
 
 	public static void createSpawn(EntityPlayer player, World world, BlockPos spawn) {
 		if (spawn.getX() == 0 && spawn.getZ() == 0 && !IslandManager.worldOneChunk) {
-			mainSpawn(world, spawn);
+			if (ConfigOptions.islandSettings.islandMainSpawnType.equals("bedrock"))
+				mainSpawn(world, spawn);
+			else {
+				Random random = world.rand;
+				int type = ConfigOptions.islandSettings.islandSpawnType.equals("random")
+						? random.nextInt(IslandManager.IslandGenerations.size())
+						: IslandManager.getIndexOfIslandType(ConfigOptions.islandSettings.islandSpawnType);
+
+				spawnPlat(player, world, spawn, type);
+			}
+
 			return;
 		}
 
