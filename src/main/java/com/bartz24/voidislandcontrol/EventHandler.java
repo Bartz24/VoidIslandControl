@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.bartz24.voidislandcontrol.api.IslandManager;
@@ -181,7 +183,7 @@ public class EventHandler {
 						? random.nextInt(IslandManager.IslandGenerations.size())
 						: IslandManager.getIndexOfIslandType(ConfigOptions.islandSettings.islandSpawnType);
 
-				spawnPlat(player, world, spawn, type);
+				spawnPlat(null, world, spawn, type);
 			}
 
 			return;
@@ -195,7 +197,7 @@ public class EventHandler {
 		spawnPlat(player, world, spawn, type);
 	}
 
-	private static void spawnPlat(EntityPlayer player, World world, BlockPos spawn, int type) {
+	private static void spawnPlat(@Nullable EntityPlayer player, World world, BlockPos spawn, int type) {
 		IslandManager.IslandGenerations.get(type).generate(world, spawn);
 
 		if (ConfigOptions.commandSettings.commandBlockType != CommandBlockType.NONE) {
@@ -224,9 +226,11 @@ public class EventHandler {
 			}
 		}
 
-		IslandPos position = IslandManager.getNextIsland();
-		IslandManager.CurrentIslandsList.add(new IslandPos(IslandManager.IslandGenerations.get(type).Identifier,
-				position.getX(), position.getY(), player.getGameProfile().getId()));
+		if (player != null) {
+			IslandPos position = IslandManager.getNextIsland();
+			IslandManager.CurrentIslandsList.add(new IslandPos(IslandManager.IslandGenerations.get(type).Identifier,
+					position.getX(), position.getY(), player.getGameProfile().getId()));
+		}
 	}
 
 	private static void mainSpawn(World world, BlockPos spawn) {
