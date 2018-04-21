@@ -204,8 +204,8 @@ public class PlatformCommand extends CommandBase implements ICommand {
 		IslandManager.setVisitLoc(player, isPos.getX(), isPos.getY());
 		player.setGameType(GameType.SPECTATOR);
 
-		if (player.dimension != 0)
-			player.changeDimension(0);
+		if (player.dimension != ConfigOptions.worldGenSettings.baseDimension)
+			player.changeDimension(ConfigOptions.worldGenSettings.baseDimension);
 		player.connection.setPlayerLocation(visitPos.getX() + 0.5, visitPos.getY(), visitPos.getZ() + 0.5,
 				player.rotationYaw, player.rotationPitch);
 
@@ -245,8 +245,8 @@ public class PlatformCommand extends CommandBase implements ICommand {
 			return;
 		}
 
-		if (player2.dimension != 0)
-			player2.changeDimension(0);
+		if (player2.dimension != ConfigOptions.worldGenSettings.baseDimension)
+			player2.changeDimension(ConfigOptions.worldGenSettings.baseDimension);
 		for (int i = 0; i < player2.inventory.getSizeInventory(); i++) {
 			ItemStack stack = player2.inventory.getStackInSlot(i).copy();
 			EntityItem item = new EntityItem(player.world);
@@ -293,8 +293,8 @@ public class PlatformCommand extends CommandBase implements ICommand {
 
 				if (i > -1 && i < IslandManager.IslandGenerations.size()) {
 
-					if (player.dimension != 0)
-						player.changeDimension(0);
+					if (player.dimension != ConfigOptions.worldGenSettings.baseDimension)
+						player.changeDimension(ConfigOptions.worldGenSettings.baseDimension);
 					EventHandler.spawnPlayer(player, new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0), i);
 				}
 			} else {
@@ -303,8 +303,8 @@ public class PlatformCommand extends CommandBase implements ICommand {
 			for (EntityPlayerMP p : players.getPlayers()) {
 				p.inventory.clear();
 
-				if (player.dimension != 0)
-					player.changeDimension(0);
+				if (player.dimension != ConfigOptions.worldGenSettings.baseDimension)
+					player.changeDimension(ConfigOptions.worldGenSettings.baseDimension);
 				EventHandler.spawnPlayer(p, new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0), false);
 				player.sendMessage(new TextComponentString("Chunk Reset!"));
 			}
@@ -382,8 +382,8 @@ public class PlatformCommand extends CommandBase implements ICommand {
 
 			if (i > -1 && i < IslandManager.IslandGenerations.size()) {
 
-				if (player.dimension != 0)
-					player.changeDimension(0);
+				if (player.dimension != ConfigOptions.worldGenSettings.baseDimension)
+					player.changeDimension(ConfigOptions.worldGenSettings.baseDimension);
 
 				EventHandler.spawnPlayer(player,
 						new BlockPos(position.getX() * ConfigOptions.islandSettings.islandDistance,
@@ -396,8 +396,8 @@ public class PlatformCommand extends CommandBase implements ICommand {
 				player.sendMessage(new TextComponentString("You can't pick your island as the config overrides it!"));
 			}
 
-			if (player.dimension != 0)
-				player.changeDimension(0);
+			if (player.dimension != ConfigOptions.worldGenSettings.baseDimension)
+				player.changeDimension(ConfigOptions.worldGenSettings.baseDimension);
 			EventHandler.spawnPlayer(player,
 					new BlockPos(position.getX() * ConfigOptions.islandSettings.islandDistance,
 							ConfigOptions.islandSettings.islandYLevel,
@@ -474,8 +474,8 @@ public class PlatformCommand extends CommandBase implements ICommand {
 			IslandManager.removeVisitLoc(player);
 		}
 
-		if (player.dimension != 0)
-			player.changeDimension(0);
+		if (player.dimension != ConfigOptions.worldGenSettings.baseDimension)
+			player.changeDimension(ConfigOptions.worldGenSettings.baseDimension);
 		IslandManager.tpPlayerToPosSpawn(player,
 				new BlockPos(position.getX() * ConfigOptions.islandSettings.islandDistance,
 						ConfigOptions.islandSettings.islandYLevel,
@@ -516,8 +516,8 @@ public class PlatformCommand extends CommandBase implements ICommand {
 			IslandManager.removeVisitLoc(player);
 		}
 
-		if (player.dimension != 0)
-			player.changeDimension(0);
+		if (player.dimension != ConfigOptions.worldGenSettings.baseDimension)
+			player.changeDimension(ConfigOptions.worldGenSettings.baseDimension);
 		IslandManager.tpPlayerToPosSpawn(player, new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0));
 	}
 
@@ -557,8 +557,8 @@ public class PlatformCommand extends CommandBase implements ICommand {
 			IslandManager.removeVisitLoc(player);
 		}
 
-		if (player.dimension != 0)
-			player.changeDimension(0);
+		if (player.dimension != ConfigOptions.worldGenSettings.baseDimension)
+			player.changeDimension(ConfigOptions.worldGenSettings.baseDimension);
 		IslandManager.tpPlayerToPos(player, home);
 
 	}
@@ -574,8 +574,8 @@ public class PlatformCommand extends CommandBase implements ICommand {
 			IslandManager.removeVisitLoc(player);
 		}
 
-		if (player.dimension != 0)
-			player.changeDimension(0);
+		if (player.dimension != ConfigOptions.worldGenSettings.baseDimension)
+			player.changeDimension(ConfigOptions.worldGenSettings.baseDimension);
 		IslandManager.tpPlayerToPos(player, new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0));
 	}
 

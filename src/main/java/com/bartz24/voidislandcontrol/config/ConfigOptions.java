@@ -35,6 +35,8 @@ public class ConfigOptions {
 		public int cloudLevel = 32;
 		@Config.Comment("Level where the horizon appears")
 		public int horizonLevel = 40;
+		@Config.Comment("Dimension for island management to occur in")
+		public int baseDimension = 0;
 
 		public enum WorldGenType {
 			VOID, OVERWORLD, SUPERFLAT

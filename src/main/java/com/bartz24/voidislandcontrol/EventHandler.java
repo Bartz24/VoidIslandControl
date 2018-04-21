@@ -68,7 +68,7 @@ public class EventHandler {
 			EntityPlayer player = (EntityPlayer) event.getEntityLiving();
 
 			if (player.getEntityWorld().getWorldInfo().getTerrainType() instanceof WorldTypeVoid
-					&& player.dimension == 0) {
+					&& player.dimension == ConfigOptions.worldGenSettings.baseDimension) {
 				if (IslandManager.spawnedPlayers.size() == 0
 						&& !IslandManager.hasPlayerSpawned(player.getGameProfile().getId())) {
 					World world = player.getEntityWorld();
@@ -105,12 +105,13 @@ public class EventHandler {
 						}
 
 						spawnPlayer(player, spawn, false);
+						player.extinguish();
 					}
 					IslandManager.spawnedPlayers.add(player.getGameProfile().getId().toString());
 				}
 			}
 
-			if (IslandManager.hasVisitLoc(player) && player.dimension == 0) {
+			if (IslandManager.hasVisitLoc(player) && player.dimension == ConfigOptions.worldGenSettings.baseDimension) {
 				if (player instanceof EntityPlayerMP
 						&& ((EntityPlayerMP) player).interactionManager.getGameType() != GameType.SPECTATOR)
 					player.setGameType(GameType.SPECTATOR);
