@@ -22,7 +22,7 @@ public class ClientEventHandler {
                 if (atSpawn && Minecraft.getMinecraft().player.getGameProfile().getId()
                         .equals(player.getGameProfile().getId())) {
                     if (Minecraft.getMinecraft().getToastGui().getToast(IslandToast.class,
-                            IslandToast.Type.Island) == null)
+                            IslandToast.Type.Island) == null && !ConfigOptions.islandSettings.hideSpawnToast)
                         Minecraft.getMinecraft().getToastGui().add(new IslandToast(
                                 new TextComponentString("Create an island!"),
                                 new TextComponentString("/" + ConfigOptions.commandSettings.commandName + " for help")));
