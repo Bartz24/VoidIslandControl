@@ -324,7 +324,7 @@ public class PlatformCommand extends CommandBase implements ICommand {
 
 		player.sendMessage(new TextComponentString(TextFormatting.RED + "home" + TextFormatting.WHITE
 				+ " : Teleport back to your home island. Must be at least "
-				+ ConfigOptions.islandSettings.islandDistance / 2 + " blocks away."));
+				+ ConfigOptions.islandSettings.protectionBuildRange + " blocks away."));
 
 		player.sendMessage(new TextComponentString(
 				TextFormatting.RED + "spawn" + TextFormatting.WHITE + " : Teleport back to spawn (0, 0)."));
@@ -546,9 +546,9 @@ public class PlatformCommand extends CommandBase implements ICommand {
 				ConfigOptions.islandSettings.islandYLevel, isPos.getY() * ConfigOptions.islandSettings.islandDistance);
 
 		if (Math.hypot(player.posX - home.getX() - 0.5,
-				player.posZ - home.getZ() - 0.5) < ConfigOptions.islandSettings.islandDistance / 2) {
+				player.posZ - home.getZ() - 0.5) < ConfigOptions.islandSettings.protectionBuildRange) {
 			player.sendMessage(new TextComponentString("You are too close to home!\nYou must be at least "
-					+ (ConfigOptions.islandSettings.islandDistance / 2) + " blocks away!"));
+					+ (ConfigOptions.islandSettings.protectionBuildRange) + " blocks away!"));
 			return;
 		}
 

@@ -17,7 +17,7 @@ public class ClientEventHandler {
         if (event.getEntityLiving() instanceof EntityPlayer && event.getEntityLiving().world.isRemote) {
             EntityPlayer player = (EntityPlayer) event.getEntityLiving();
             if (player.getEntityWorld().getWorldInfo().getTerrainType() instanceof WorldTypeVoid
-                    && player.dimension == ConfigOptions.worldGenSettings.baseDimension && Minecraft.getMinecraft().player != null && !IslandManager.worldOneChunk) {
+                    && player.dimension == ConfigOptions.worldGenSettings.baseDimension && Minecraft.getMinecraft().player != null && !IslandManager.worldOneChunk && !ConfigOptions.otherSettings.hideToasts) {
                 boolean atSpawn = Math.abs(player.posX) < 100 && Math.abs(player.posZ) < 100;
                 if (atSpawn && Minecraft.getMinecraft().player.getGameProfile().getId()
                         .equals(player.getGameProfile().getId())) {

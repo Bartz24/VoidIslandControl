@@ -27,7 +27,7 @@ public class ConfigOptions {
 		public boolean endVoidStructures = true;
 		@Config.Comment("Overworld generation type")
 		public WorldGenType worldGenType = WorldGenType.VOID;
-		@Config.Comment("VOID-NOT USED, OVERWORLD-NOT USED, SUPERFLAT-Use the string as used for normal flat worlds")
+		@Config.Comment("VOID-NOT USED, OVERWORLD-NOT USED, SUPERFLAT-Use the string as used for normal flat worlds, WORLDTYPE-world type to be used (set like server level-types)")
 		public String worldGenSpecialParameters = "";
 		@Config.Comment("Biome used for entire world")
 		public int worldBiomeID = -1;
@@ -39,7 +39,7 @@ public class ConfigOptions {
 		public int baseDimension = 0;
 
 		public enum WorldGenType {
-			VOID, OVERWORLD, SUPERFLAT
+			VOID, OVERWORLD, SUPERFLAT, WORLDTYPE
 		}
 	}
 
@@ -53,6 +53,10 @@ public class ConfigOptions {
 		public String islandSpawnType = "random";
 		@Config.Comment("Distance between islands")
 		public int islandDistance = 1000;
+		@Config.Comment("Range where players from other islands are not allowed and the range furthest players of an island can go. Affects spawn too (Max of islandDistance/2)")
+		public int protectionBuildRange = 500;
+		@Config.Comment("Protect spawn from building, destroying, interactions with blocks and machines, etc. Those in creative are ignored")
+		public boolean spawnProtection = true;
 		@Config.Comment("Width of islands")
 		public int islandSize = 3;
 		@Config.Comment("Spawn a chest on the island")
@@ -212,6 +216,14 @@ public class ConfigOptions {
 		public enum CommandBlockType {
 			NONE, IMPULSE, REPEATING, CHAIN
 		}
+	}
+
+	@Config.Comment("Config Settings for other stuff")
+	public static OtherSettings otherSettings = new OtherSettings();
+
+	public static class OtherSettings {
+		@Config.Comment("Hide the toasts when at spawn")
+		public boolean hideToasts = false;
 	}
 
 	@SubscribeEvent

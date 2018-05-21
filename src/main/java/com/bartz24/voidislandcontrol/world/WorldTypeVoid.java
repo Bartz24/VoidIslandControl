@@ -13,51 +13,66 @@ import net.minecraft.world.gen.ChunkGeneratorOverworld;
 import net.minecraft.world.gen.IChunkGenerator;
 
 public class WorldTypeVoid extends WorldType {
-	public WorldTypeVoid() {
-		super("voidworld");
-	}
+    private WorldType overridenWorldType;
 
-	public boolean hasInfoNotice() {
-		return true;
-	}
+    public WorldTypeVoid() {
+        super("voidworld");
+        if (ConfigOptions.worldGenSettings.worldGenType == WorldGenType.WORLDTYPE)
+            overridenWorldType = WorldType.parseWorldType(ConfigOptions.worldGenSettings.worldGenSpecialParameters);
+    }
 
-	@Override
-	public int getMinimumSpawnHeight(World world) {
-		return ConfigOptions.islandSettings.islandYLevel;
-	}
+    public boolean hasInfoNotice() {
+        return true;
+    }
 
-	public int getSpawnFuzz() {
-		return 2;
-	}
+    @Override
+    public int getMinimumSpawnHeight(World world) {
+        return ConfigOptions.islandSettings.islandYLevel;
+    }
 
-	@Override
-	public float getCloudHeight() {
-		return ConfigOptions.worldGenSettings.cloudLevel;
-	}
+    public int getSpawnFuzz() {
+        return 2;
+    }
 
-	@Override
-	public double getHorizon(World world) {
-		return ConfigOptions.worldGenSettings.horizonLevel;
-	}
+    @Override
+    public float getCloudHeight() {
+        return ConfigOptions.worldGenSettings.cloudLevel;
+    }
 
-	public BiomeProvider getBiomeProvider(World world) {
-		if (ConfigOptions.worldGenSettings.worldBiomeID > -1) {
-			return new BiomeProviderSingle(Biome.getBiome(ConfigOptions.worldGenSettings.worldBiomeID));
-		} else {
-			return new BiomeProvider(world.getWorldInfo());
-		}
-	}
+    @Override
+    public double getHorizon(World world) {
+        return ConfigOptions.worldGenSettings.horizonLevel;
+    }
 
-	@Override
-	public IChunkGenerator getChunkGenerator(World world, String generatorOptions) {
-		if (ConfigOptions.worldGenSettings.worldGenType != WorldGenType.OVERWORLD) {
-			String genSettings = "3;1*minecraft:air";
-			if (ConfigOptions.worldGenSettings.worldGenType == WorldGenType.SUPERFLAT)
-				genSettings = ConfigOptions.worldGenSettings.worldGenSpecialParameters;
-			ChunkGeneratorFlat provider = new ChunkGeneratorFlat(world, world.getSeed(), false, genSettings);
-			world.setSeaLevel(63);
-			return provider;
-		} else
-			return new ChunkGeneratorOverworld(world, world.getSeed(), true, generatorOptions);
-	}
+    public BiomeProvider getBiomeProvider(World world) {
+        if (overridenWorldType != null)
+            return overridenWorldType.getBiomeProvider(world);
+        if (ConfigOptions.worldGenSettings.worldBiomeID > -1) {
+            return new BiomeProviderSingle(Biome.getBiome(ConfigOptions.worldGenSettings.worldBiomeID));
+        } else {
+            return new BiomeProvider(world.getWorldInfo());
+        }
+    }
+
+    @Override
+    public IChunkGenerator getChunkGenerator(World world, String generatorOptions) {
+        if (overridenWorldType != null)
+            return overridenWorldType.getChunkGenerator(world, generatorOptions);
+        if (ConfigOptions.worldGenSettings.worldGenType != WorldGenType.OVERWORLD) {
+            String genSettings = "3;1*minecraft:air";
+            if (ConfigOptions.worldGenSettings.worldGenType == WorldGenType.SUPERFLAT)
+                genSettings = ConfigOptions.worldGenSettings.worldGenSpecialParameters;
+            ChunkGeneratorFlat provider = new ChunkGeneratorFlat(world, world.getSeed(), false, genSettings);
+            world.setSeaLevel(63);
+            return provider;
+        } else
+            return new ChunkGeneratorOverworld(world, world.getSeed(), true, generatorOptions);
+    }
+
+    public boolean handleSlimeSpawnReduction(java.util.Random random, World world)
+    {
+        if (overridenWorldType != null)
+            return overridenWorldType.handleSlimeSpawnReduction(random, world);
+        return super.handleSlimeSpawnReduction(random, world);
+    }
 }
