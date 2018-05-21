@@ -79,6 +79,8 @@ public class ConfigOptions {
 		public boolean allowIslandCreation = true;
 		@Config.Comment("Reset players inventory with the starting inventory")
 		public boolean resetInventory = true;
+		@Config.Comment("Hide spawn toast")
+		public boolean hideSpawnToast = false;
 		@Config.Comment("Custom islands using the structure block data. Files are to be placed in the "
 				+ References.ModID
 				+ "structures config folder. The names in this list should be the same as the structure names. "
