@@ -135,8 +135,8 @@ public class EventHandler {
                 if (Math.abs(player.posX) > ConfigOptions.islandSettings.protectionBuildRange
                         || Math.abs(player.posZ) > ConfigOptions.islandSettings.protectionBuildRange) {
                     IslandPos pos = IslandManager.getPlayerIsland(player.getGameProfile().getId());
-                    int posX = pos.getX() * ConfigOptions.islandSettings.islandDistance;
-                    int posY = pos.getY() * ConfigOptions.islandSettings.islandDistance;
+                    int posX = pos == null ? 0 : (pos.getX() * ConfigOptions.islandSettings.islandDistance);
+                    int posY = pos == null ? 0 : (pos.getY() * ConfigOptions.islandSettings.islandDistance);
                     if (pos != null && Math.abs(player.posX - posX) < ConfigOptions.islandSettings.protectionBuildRange
                             && Math.abs(player.posZ - posY) < ConfigOptions.islandSettings.protectionBuildRange) {
                     } else {

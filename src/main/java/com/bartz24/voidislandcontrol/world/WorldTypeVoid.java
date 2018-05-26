@@ -11,6 +11,8 @@ import net.minecraft.world.biome.BiomeProviderSingle;
 import net.minecraft.world.gen.ChunkGeneratorFlat;
 import net.minecraft.world.gen.ChunkGeneratorOverworld;
 import net.minecraft.world.gen.IChunkGenerator;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class WorldTypeVoid extends WorldType {
     private WorldType overridenWorldType;
@@ -54,11 +56,24 @@ public class WorldTypeVoid extends WorldType {
         }
     }
 
+    @SideOnly(Side.CLIENT)
+    public void onCustomizeButton(net.minecraft.client.Minecraft mc, net.minecraft.client.gui.GuiCreateWorld guiCreateWorld)
+    {
+        if(ConfigOptions.worldGenSettings.worldGenType == WorldGenType.CUSTOMIZED)
+        {
+            mc.displayGuiScreen(new net.minecraft.client.gui.GuiCustomizeWorldScreen(guiCreateWorld, guiCreateWorld.chunkProviderSettingsJson));
+        }
+    }
+    public boolean isCustomizable()
+    {
+        return ConfigOptions.worldGenSettings.worldGenType == WorldGenType.CUSTOMIZED;
+    }
+
     @Override
     public IChunkGenerator getChunkGenerator(World world, String generatorOptions) {
         if (overridenWorldType != null)
             return overridenWorldType.getChunkGenerator(world, generatorOptions);
-        if (ConfigOptions.worldGenSettings.worldGenType != WorldGenType.OVERWORLD) {
+        if (ConfigOptions.worldGenSettings.worldGenType != WorldGenType.OVERWORLD && ConfigOptions.worldGenSettings.worldGenType != WorldGenType.CUSTOMIZED ) {
             String genSettings = "3;1*minecraft:air";
             if (ConfigOptions.worldGenSettings.worldGenType == WorldGenType.SUPERFLAT)
                 genSettings = ConfigOptions.worldGenSettings.worldGenSpecialParameters;

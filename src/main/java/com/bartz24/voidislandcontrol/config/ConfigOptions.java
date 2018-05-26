@@ -27,7 +27,7 @@ public class ConfigOptions {
 		public boolean endVoidStructures = true;
 		@Config.Comment("Overworld generation type")
 		public WorldGenType worldGenType = WorldGenType.VOID;
-		@Config.Comment("VOID-NOT USED, OVERWORLD-NOT USED, SUPERFLAT-Use the string as used for normal flat worlds, WORLDTYPE-world type to be used (set like server level-types)")
+		@Config.Comment("VOID-NOT USED, OVERWORLD-NOT USED, SUPERFLAT-Use the string as used for normal flat worlds, WORLDTYPE-world type to be used (set like server level-types), CUSTOMIZED-NOT USED")
 		public String worldGenSpecialParameters = "";
 		@Config.Comment("Biome used for entire world")
 		public int worldBiomeID = -1;
@@ -39,7 +39,7 @@ public class ConfigOptions {
 		public int baseDimension = 0;
 
 		public enum WorldGenType {
-			VOID, OVERWORLD, SUPERFLAT, WORLDTYPE
+			VOID, OVERWORLD, SUPERFLAT, WORLDTYPE, CUSTOMIZED
 		}
 	}
 
