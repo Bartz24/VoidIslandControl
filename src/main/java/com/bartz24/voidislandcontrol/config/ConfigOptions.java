@@ -57,6 +57,8 @@ public class ConfigOptions {
 		public int protectionBuildRange = 500;
 		@Config.Comment("Protect spawn from building, destroying, interactions with blocks and machines, etc. Those in creative are ignored")
 		public boolean spawnProtection = true;
+		@Config.Comment("Disables effect of protectionBuildRange")
+		public boolean islandProtection = true;
 		@Config.Comment("Width of islands")
 		public int islandSize = 3;
 		@Config.Comment("Spawn a chest on the island")

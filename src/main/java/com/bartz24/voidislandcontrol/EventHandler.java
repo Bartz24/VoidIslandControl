@@ -117,8 +117,9 @@ public class EventHandler {
                     player.setGameType(GameType.SPECTATOR);
                 int posX = IslandManager.getVisitLoc(player).getX() * ConfigOptions.islandSettings.islandDistance;
                 int posY = IslandManager.getVisitLoc(player).getY() * ConfigOptions.islandSettings.islandDistance;
-                if (Math.abs(player.posX - posX) > ConfigOptions.islandSettings.protectionBuildRange
-                        || Math.abs(player.posZ - posY) > ConfigOptions.islandSettings.protectionBuildRange) {
+                if (ConfigOptions.islandSettings.islandProtection && (
+                        Math.abs(player.posX - posX) > ConfigOptions.islandSettings.protectionBuildRange
+                                || Math.abs(player.posZ - posY) > ConfigOptions.islandSettings.protectionBuildRange)) {
                     player.sendMessage(
                             new TextComponentString(TextFormatting.RED + "You can't be visiting that far away!"));
                     player.setGameType(GameType.SURVIVAL);
@@ -130,13 +131,13 @@ public class EventHandler {
 
             if (player.getEntityWorld().getWorldInfo().getTerrainType() instanceof WorldTypeVoid
                     && player.dimension == ConfigOptions.worldGenSettings.baseDimension && !player.isCreative() && !IslandManager.hasVisitLoc(player)) {
-                if (Math.abs(player.posX) > ConfigOptions.islandSettings.protectionBuildRange
-                        || Math.abs(player.posZ) > ConfigOptions.islandSettings.protectionBuildRange) {
+                if (ConfigOptions.islandSettings.islandProtection && (Math.abs(player.posX) > ConfigOptions.islandSettings.protectionBuildRange
+                        || Math.abs(player.posZ) > ConfigOptions.islandSettings.protectionBuildRange)) {
                     IslandPos pos = IslandManager.getPlayerIsland(player.getGameProfile().getId());
                     int posX = pos == null ? 0 : (pos.getX() * ConfigOptions.islandSettings.islandDistance);
                     int posY = pos == null ? 0 : (pos.getY() * ConfigOptions.islandSettings.islandDistance);
-                    if (Math.abs(player.posX - posX) > ConfigOptions.islandSettings.protectionBuildRange
-                            || Math.abs(player.posZ - posY) > ConfigOptions.islandSettings.protectionBuildRange) {
+                    if (ConfigOptions.islandSettings.islandProtection && (Math.abs(player.posX - posX) > ConfigOptions.islandSettings.protectionBuildRange
+                            || Math.abs(player.posZ - posY) > ConfigOptions.islandSettings.protectionBuildRange)) {
                         player.sendMessage(
                                 new TextComponentString(TextFormatting.RED + "You can't be away from your island or spawn that far away!"));
                         player.setGameType(GameType.SURVIVAL);
