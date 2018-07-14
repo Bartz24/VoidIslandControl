@@ -1,12 +1,7 @@
 package com.bartz24.voidislandcontrol.api;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 import com.bartz24.voidislandcontrol.config.ConfigOptions;
 import com.google.common.base.Strings;
-
 import net.minecraft.command.CommandGive;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -19,6 +14,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class IslandManager {
     public static ArrayList<IslandGen> IslandGenerations = new ArrayList<IslandGen>();
@@ -77,7 +76,7 @@ public class IslandManager {
     public static IslandPos getIslandAtPos(int x, int y) {
         for (IslandPos pos : CurrentIslandsList) {
             if (pos.getX() == x && pos.getY() == y)
-            return pos;
+                return pos;
         }
         return null;
     }
@@ -170,7 +169,13 @@ public class IslandManager {
 
         player.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 120, 20, false, false));
 
-        player.setPositionAndUpdate(pos.getX() + 0.5, pos.getY() + 2.6, pos.getZ() + 0.5);
+
+        if (player.dimension != ConfigOptions.worldGenSettings.baseDimension && player instanceof EntityPlayerMP)
+            player.getServer().getPlayerList().transferPlayerToDimension((EntityPlayerMP) player, ConfigOptions.worldGenSettings.baseDimension,
+                    new VICTeleporter(player.getServer().getWorld(ConfigOptions.worldGenSettings.baseDimension),
+                            pos.getX() + 0.5f, pos.getY() + 2.6f, pos.getZ() + 0.5f));
+        else
+            player.setPositionAndUpdate(pos.getX() + 0.5, pos.getY() + 2.6, pos.getZ() + 0.5);
     }
 
     public static void tpPlayerToPosSpawn(EntityPlayer player, BlockPos pos) {

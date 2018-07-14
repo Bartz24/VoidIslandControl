@@ -117,8 +117,6 @@ public class AdminCommand extends CommandBase implements ICommand {
             return;
         }
 
-        if (player2.dimension != ConfigOptions.worldGenSettings.baseDimension)
-            player2.changeDimension(ConfigOptions.worldGenSettings.baseDimension);
         for (int i = 0; i < player2.inventory.getSizeInventory(); i++) {
             ItemStack stack = player2.inventory.getStackInSlot(i).copy();
             EntityItem item = new EntityItem(player.world);
@@ -197,8 +195,6 @@ public class AdminCommand extends CommandBase implements ICommand {
             IslandManager.removeVisitLoc(player2);
         }
 
-        if (player2.dimension != ConfigOptions.worldGenSettings.baseDimension)
-            player2.changeDimension(ConfigOptions.worldGenSettings.baseDimension);
         IslandManager.tpPlayerToPosSpawn(player2,
                 new BlockPos(position.getX() * ConfigOptions.islandSettings.islandDistance,
                         ConfigOptions.islandSettings.islandYLevel,

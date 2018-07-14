@@ -1,20 +1,10 @@
 package com.bartz24.voidislandcontrol;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
-import javax.annotation.Nullable;
-
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import org.apache.commons.lang3.StringUtils;
-
 import com.bartz24.voidislandcontrol.api.IslandManager;
 import com.bartz24.voidislandcontrol.api.IslandPos;
 import com.bartz24.voidislandcontrol.config.ConfigOptions;
 import com.bartz24.voidislandcontrol.config.ConfigOptions.CommandSettings.CommandBlockType;
 import com.bartz24.voidislandcontrol.world.WorldTypeVoid;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCommandBlock;
 import net.minecraft.client.Minecraft;
@@ -35,6 +25,7 @@ import net.minecraft.world.WorldType;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.WorldEvent.Save;
 import net.minecraftforge.event.world.WorldEvent.Unload;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -42,6 +33,12 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class EventHandler {
     @SubscribeEvent
@@ -68,14 +65,15 @@ public class EventHandler {
         if (event.getEntityLiving() instanceof EntityPlayer && !event.getEntity().getEntityWorld().isRemote) {
             EntityPlayer player = (EntityPlayer) event.getEntityLiving();
 
-            if (player.getEntityWorld().getWorldInfo().getTerrainType() instanceof WorldTypeVoid
-                    && player.dimension == ConfigOptions.worldGenSettings.baseDimension) {
+
+            if (player.getEntityWorld().getWorldInfo().getTerrainType() instanceof WorldTypeVoid) {
                 if (IslandManager.spawnedPlayers.size() == 0
-                        && !IslandManager.hasPlayerSpawned(player.getGameProfile().getId())) {
+                        || !IslandManager.hasPlayerSpawned(player.getGameProfile().getId())) {
+                    IslandManager.tpPlayerToPos(player, new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0));
                     World world = player.getEntityWorld();
-                    if (world.getSpawnPoint().getX() != 0 && world.getSpawnPoint().getZ() != 0)
+                    if (world.getSpawnPoint().getX() != 0 || world.getSpawnPoint().getZ() != 0)
                         world.setSpawnPoint(new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0));
-                    BlockPos spawn = world.getSpawnPoint();
+                    BlockPos spawn = new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0);
 
                     if (!IslandManager.hasPosition(0, 0)) {
                         IslandManager.CurrentIslandsList.add(new IslandPos(0, 0));
@@ -308,7 +306,7 @@ public class EventHandler {
                 || Math.abs(player.posZ) > ConfigOptions.islandSettings.protectionBuildRange) {
             return event;
         } else {
-            if(!player.isCreative() && event.isCancelable()) {
+            if (!player.isCreative() && event.isCancelable()) {
                 event.setCanceled(true);
             }
             return null;

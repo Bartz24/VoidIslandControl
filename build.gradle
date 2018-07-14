@@ -33,7 +33,7 @@ minecraft {
 
 dependencies {
     //deobfCompile "com.github.mcjty:compatlayer:1.10-0.2.2"
-	compile files("lib/Botania r1.10-353-deobf.jar")
+	compile files("lib/Botania r1.10-354-deobf.jar")
 
 }
 
