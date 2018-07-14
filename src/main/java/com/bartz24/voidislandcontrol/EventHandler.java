@@ -129,21 +129,20 @@ public class EventHandler {
             }
 
             if (player.getEntityWorld().getWorldInfo().getTerrainType() instanceof WorldTypeVoid
-                    && player.dimension == ConfigOptions.worldGenSettings.baseDimension && !player.isCreative()) {
+                    && player.dimension == ConfigOptions.worldGenSettings.baseDimension && !player.isCreative() && !IslandManager.hasVisitLoc(player)) {
                 if (Math.abs(player.posX) > ConfigOptions.islandSettings.protectionBuildRange
                         || Math.abs(player.posZ) > ConfigOptions.islandSettings.protectionBuildRange) {
                     IslandPos pos = IslandManager.getPlayerIsland(player.getGameProfile().getId());
                     int posX = pos == null ? 0 : (pos.getX() * ConfigOptions.islandSettings.islandDistance);
                     int posY = pos == null ? 0 : (pos.getY() * ConfigOptions.islandSettings.islandDistance);
-                    if (pos != null && Math.abs(player.posX - posX) < ConfigOptions.islandSettings.protectionBuildRange
-                            && Math.abs(player.posZ - posY) < ConfigOptions.islandSettings.protectionBuildRange) {
-                    } else {
+                    if (Math.abs(player.posX - posX) > ConfigOptions.islandSettings.protectionBuildRange
+                            || Math.abs(player.posZ - posY) > ConfigOptions.islandSettings.protectionBuildRange) {
                         player.sendMessage(
                                 new TextComponentString(TextFormatting.RED + "You can't be away from your island or spawn that far away!"));
                         player.setGameType(GameType.SURVIVAL);
                         IslandManager.removeVisitLoc(player);
                         IslandManager.tpPlayerToPos(player,
-                                new BlockPos(pos == null ? 0 : posX, ConfigOptions.islandSettings.islandYLevel, pos == null ? 0 : posY));
+                                new BlockPos(posX, ConfigOptions.islandSettings.islandYLevel, posY));
                     }
                 }
             }
