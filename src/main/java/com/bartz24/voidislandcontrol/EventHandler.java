@@ -200,9 +200,9 @@ public class EventHandler {
                 mainSpawn(world, spawn);
             else {
                 Random random = world.rand;
-                int type = ConfigOptions.islandSettings.islandSpawnType.equals("random")
+                int type = ConfigOptions.islandSettings.islandMainSpawnType.equals("random")
                         ? random.nextInt(IslandManager.IslandGenerations.size())
-                        : IslandManager.getIndexOfIslandType(ConfigOptions.islandSettings.islandSpawnType);
+                        : IslandManager.getIndexOfIslandType(ConfigOptions.islandSettings.islandMainSpawnType);
 
                 spawnPlat(null, world, spawn, type);
             }
