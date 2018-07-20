@@ -260,7 +260,7 @@ public class IslandRegistry {
 		if (t != null) {
 			BlockPos genPos = new BlockPos(pos.getX() - t.getSize().getX() / 2, pos.getY(),
 					pos.getZ() - t.getSize().getZ() / 2);
-			t.addBlocksToWorld(world, genPos, new PlacementSettings());
+			t.addBlocksToWorld(world, genPos, new PlacementSettings().setIgnoreStructureBlock(false));
 		} else
 			world.setBlockState(pos.down(2), Blocks.BEDROCK.getDefaultState());
 	}
