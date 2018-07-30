@@ -329,7 +329,7 @@ public class PlatformCommand extends CommandBase implements ICommand {
     }
 
     public static void newPlatform(EntityPlayerMP player, String[] args) throws CommandException {
-        if (args.length == 1 || ((args.length > 1 && !args[1].equals("bypass"))) && !ConfigOptions.islandSettings.allowIslandCreation) {
+        if ((args.length == 1 || (args.length > 1 && !args[1].equals("bypass"))) && !ConfigOptions.islandSettings.allowIslandCreation) {
             player.sendMessage(new TextComponentString(TextFormatting.RED + "Not allowed to create islands!"));
             return;
         }
