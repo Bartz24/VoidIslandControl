@@ -69,7 +69,7 @@ public class EventHandler {
             if (player.getEntityWorld().getWorldInfo().getTerrainType() instanceof WorldTypeVoid) {
                 if (IslandManager.spawnedPlayers.size() == 0
                         || !IslandManager.hasPlayerSpawned(player.getGameProfile().getId())) {
-                    IslandManager.tpPlayerToPos(player, new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0));
+                    IslandManager.tpPlayerToPos(player, new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0), null);
                     World world = player.getEntityWorld();
                     if (world.getSpawnPoint().getX() != 0 || world.getSpawnPoint().getZ() != 0)
                         world.setSpawnPoint(new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0));
@@ -125,7 +125,7 @@ public class EventHandler {
                     player.setGameType(GameType.SURVIVAL);
                     IslandManager.removeVisitLoc(player);
                     IslandManager.tpPlayerToPos(player,
-                            new BlockPos(posX, ConfigOptions.islandSettings.islandYLevel, posY));
+                            new BlockPos(posX, ConfigOptions.islandSettings.islandYLevel, posY), IslandManager.getVisitLoc(player));
                 }
             }
 
@@ -141,9 +141,8 @@ public class EventHandler {
                         player.sendMessage(
                                 new TextComponentString(TextFormatting.RED + "You can't be away from your island or spawn that far away!"));
                         player.setGameType(GameType.SURVIVAL);
-                        IslandManager.removeVisitLoc(player);
                         IslandManager.tpPlayerToPos(player,
-                                new BlockPos(posX, ConfigOptions.islandSettings.islandYLevel, posY));
+                                new BlockPos(posX, ConfigOptions.islandSettings.islandYLevel, posY), pos);
                     }
                 }
             }
@@ -182,16 +181,15 @@ public class EventHandler {
 
         if (player instanceof EntityPlayerMP) {
             EntityPlayerMP pmp = (EntityPlayerMP) player;
-            IslandManager.tpPlayerToPosSpawn(player, pos.up(4));
+            IslandManager.tpPlayerToPosSpawn(player, pos, IslandManager.getPlayerIsland(pmp.getUniqueID()));
 
             IslandManager.setStartingInv(pmp);
         }
     }
 
     public static void spawnPlayer(EntityPlayer player, BlockPos pos, int forceType) {
-        spawnPlayer(player, pos, false);
-
         spawnPlat(player, player.getEntityWorld(), pos, forceType);
+        spawnPlayer(player, pos, false);
     }
 
     public static void createSpawn(EntityPlayer player, World world, BlockPos spawn) {
@@ -219,6 +217,12 @@ public class EventHandler {
     }
 
     private static void spawnPlat(@Nullable EntityPlayer player, World world, BlockPos spawn, int type) {
+        if (player != null) {
+            IslandPos position = IslandManager.getNextIsland();
+            IslandManager.CurrentIslandsList.add(new IslandPos(IslandManager.IslandGenerations.get(type).Identifier,
+                    position.getX(), position.getY(), player.getGameProfile().getId()));
+        }
+
         IslandManager.IslandGenerations.get(type).generate(world, spawn);
 
         if (ConfigOptions.commandSettings.commandBlockType != CommandBlockType.NONE) {
@@ -245,12 +249,6 @@ public class EventHandler {
                 te.getCommandBlockLogic().setCommand(ConfigOptions.commandSettings.commandBlockCommand);
                 te.setAuto(ConfigOptions.commandSettings.commandBlockAuto);
             }
-        }
-
-        if (player != null) {
-            IslandPos position = IslandManager.getNextIsland();
-            IslandManager.CurrentIslandsList.add(new IslandPos(IslandManager.IslandGenerations.get(type).Identifier,
-                    position.getX(), position.getY(), player.getGameProfile().getId()));
         }
     }
 
@@ -282,7 +280,7 @@ public class EventHandler {
                             ConfigOptions.islandSettings.islandYLevel,
                             iPos.getY() * ConfigOptions.islandSettings.islandDistance);
 
-                IslandManager.tpPlayerToPos(player, pos);
+                IslandManager.tpPlayerToPos(player, pos, iPos);
             }
         }
     }

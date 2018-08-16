@@ -78,11 +78,11 @@ public class AdminCommand extends CommandBase implements ICommand {
             if (subCommand.equals("kick"))
                 kick(player, args);
             else if (subCommand.equals("assign"))
-                kick(player, args);
+                assign(player, args);
             else if (subCommand.equals("assignOwner"))
-                kick(player, args);
+                assignOwner(player, args);
             else if (subCommand.equals("getIslandHere"))
-                kick(player, args);
+                getIsland(player, args);
 
         }
 
@@ -167,7 +167,7 @@ public class AdminCommand extends CommandBase implements ICommand {
                 + " : Shows the island coordinates of the island the player is at"));
     }
 
-    public static void assign(EntityPlayerMP player, String[] args, World world) throws CommandException {
+    public static void assign(EntityPlayerMP player, String[] args) throws CommandException {
 
         EntityPlayerMP player2 = (EntityPlayerMP) player.getEntityWorld().getPlayerEntityByName(args[1]);
 
@@ -185,7 +185,7 @@ public class AdminCommand extends CommandBase implements ICommand {
         IslandManager.addPlayer(player2.getGameProfile().getId(), position);
 
         for (String name : position.getPlayerUUIDs()) {
-            EntityPlayerMP p = (EntityPlayerMP) world.getPlayerEntityByName(name);
+            EntityPlayerMP p = (EntityPlayerMP) player.world.getPlayerEntityByName(name);
             if (p != null)
                 p.sendMessage(new TextComponentString(player2.getName() + " joined your island!"));
         }
@@ -198,12 +198,12 @@ public class AdminCommand extends CommandBase implements ICommand {
         IslandManager.tpPlayerToPosSpawn(player2,
                 new BlockPos(position.getX() * ConfigOptions.islandSettings.islandDistance,
                         ConfigOptions.islandSettings.islandYLevel,
-                        position.getY() * ConfigOptions.islandSettings.islandDistance));
+                        position.getY() * ConfigOptions.islandSettings.islandDistance), position);
 
     }
 
 
-    public static void getIsland(EntityPlayerMP player, String[] args, World world) throws CommandException {
+    public static void getIsland(EntityPlayerMP player, String[] args) throws CommandException {
 
         if (args.length != 1) {
             player.sendMessage(new TextComponentString("Must have no arguments."));
@@ -217,6 +217,12 @@ public class AdminCommand extends CommandBase implements ICommand {
         }
 
         player.sendMessage(new TextComponentString("X: " + position.getX() + ", Y: " + position.getY()));
+        player.sendMessage(new TextComponentString("Player UUIDs: "));
+
+        for(String s: position.getPlayerUUIDs())
+        {
+            player.sendMessage(new TextComponentString(s));
+        }
     }
 
     @Override

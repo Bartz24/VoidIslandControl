@@ -456,7 +456,7 @@ public class PlatformCommand extends CommandBase implements ICommand {
         IslandManager.tpPlayerToPosSpawn(player,
                 new BlockPos(position.getX() * ConfigOptions.islandSettings.islandDistance,
                         ConfigOptions.islandSettings.islandYLevel,
-                        position.getY() * ConfigOptions.islandSettings.islandDistance));
+                        position.getY() * ConfigOptions.islandSettings.islandDistance), position);
 
     }
 
@@ -493,7 +493,7 @@ public class PlatformCommand extends CommandBase implements ICommand {
             IslandManager.removeVisitLoc(player);
         }
 
-        IslandManager.tpPlayerToPosSpawn(player, new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0));
+        IslandManager.tpPlayerToPosSpawn(player, new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0), null);
     }
 
     public static void tpHome(EntityPlayerMP player, String[] args) throws CommandException {
@@ -532,7 +532,7 @@ public class PlatformCommand extends CommandBase implements ICommand {
             IslandManager.removeVisitLoc(player);
         }
 
-        IslandManager.tpPlayerToPos(player, home);
+        IslandManager.tpPlayerToPos(player, home, isPos);
 
     }
 
@@ -547,7 +547,7 @@ public class PlatformCommand extends CommandBase implements ICommand {
             IslandManager.removeVisitLoc(player);
         }
 
-        IslandManager.tpPlayerToPos(player, new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0));
+        IslandManager.tpPlayerToPos(player, new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0), null);
     }
 
     @Override

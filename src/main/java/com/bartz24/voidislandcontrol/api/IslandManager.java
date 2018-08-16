@@ -155,19 +155,23 @@ public class IslandManager {
         }
     }
 
-    public static void tpPlayerToPos(EntityPlayer player, BlockPos pos) {
-        if (!ConfigOptions.islandSettings.forceSpawnAtOffset) {
+    public static void tpPlayerToPos(EntityPlayer player, BlockPos pos, IslandPos islandPos) {
+
+        if (getSpawnOffset(islandPos) != null) {
+            pos = pos.add(getSpawnOffset(islandPos));
+        }
+
+        if (!ConfigOptions.islandSettings.forceSpawn) {
             if (!player.getEntityWorld().isAirBlock(pos) && !player.getEntityWorld().isAirBlock(pos.up())) {
                 pos = player.getEntityWorld().getTopSolidOrLiquidBlock(pos.up(2));
 
                 player.sendMessage(new TextComponentString("Failed to spawn. Sent to top block of platform spawn."));
             }
-        } else
-            pos = new BlockPos(ConfigOptions.islandSettings.forceSpawnOffset.x,
-                    ConfigOptions.islandSettings.forceSpawnOffset.y, ConfigOptions.islandSettings.forceSpawnOffset.z)
-                    .add(pos);
-
+        }
         player.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 120, 20, false, false));
+        player.extinguish();
+        player.addPotionEffect(new PotionEffect(MobEffects.FIRE_RESISTANCE, 120, 20, false, false));
+        player.addPotionEffect(new PotionEffect(MobEffects.REGENERATION, 120, 20, false, false));
 
 
         if (player.dimension != ConfigOptions.worldGenSettings.baseDimension && player instanceof EntityPlayerMP)
@@ -178,8 +182,14 @@ public class IslandManager {
             player.setPositionAndUpdate(pos.getX() + 0.5, pos.getY() + 2.6, pos.getZ() + 0.5);
     }
 
-    public static void tpPlayerToPosSpawn(EntityPlayer player, BlockPos pos) {
-        tpPlayerToPos(player, pos);
+    public static BlockPos getSpawnOffset(IslandPos islandPos) {
+        if (islandPos == null)
+            return null;
+        return IslandGenerations.get(getIndexOfIslandType(islandPos.getType())).spawnOffset;
+    }
+
+    public static void tpPlayerToPosSpawn(EntityPlayer player, BlockPos pos, IslandPos islandPos) {
+        tpPlayerToPos(player, pos, islandPos);
         player.setSpawnPoint(pos, true);
     }
 

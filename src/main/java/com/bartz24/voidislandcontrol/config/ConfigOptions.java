@@ -86,22 +86,8 @@ public class ConfigOptions {
 				+ "structures config folder. The names in this list should be the same as the structure names. "
 				+ "These names are the ids for the island type as well")
 		public String[] customIslands = emptyFilledArray(0);
-		@Config.Comment("Forces players to spawn at the offset given by forceSpawnOffset")
-		public boolean forceSpawnAtOffset = false;
-		@Config.Comment("Offset position for players to spawn at (Only if forceSpawnAtOffset is TRUE)")
-		public ForceSpawnPos forceSpawnOffset = new ForceSpawnPos();
-
-		public class ForceSpawnPos {
-
-			@Config.Comment("The x coordinate")
-			public int x = 0;
-
-			@Config.Comment("The y coordinate")
-			public int y = 0;
-
-			@Config.Comment("The z coordinate")
-			public int z = 0;
-		}
+		@Config.Comment("Forces players to spawn at the spawn position. By default, the player will be teleported to a safe spot above it if spawning fails. This config disables that")
+		public boolean forceSpawn = false;
 
 		@Config.Comment("Settings for the grass island")
 		public GrassIslandSettings grassSettings = new GrassIslandSettings();
