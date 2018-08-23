@@ -120,8 +120,9 @@ public class EventHandler {
                 if (ConfigOptions.islandSettings.islandProtection && (
                         Math.abs(player.posX - posX) > ConfigOptions.islandSettings.protectionBuildRange
                                 || Math.abs(player.posZ - posY) > ConfigOptions.islandSettings.protectionBuildRange)) {
-                    player.sendMessage(
-                            new TextComponentString(TextFormatting.RED + "You can't be visiting that far away!"));
+                    if (player.ticksExisted % 60 == 0)
+                        player.sendMessage(
+                                new TextComponentString(TextFormatting.RED + "You can't be visiting that far away!"));
                     player.setGameType(GameType.SURVIVAL);
                     IslandManager.removeVisitLoc(player);
                     IslandManager.tpPlayerToPos(player,
@@ -138,8 +139,9 @@ public class EventHandler {
                     int posY = pos == null ? 0 : (pos.getY() * ConfigOptions.islandSettings.islandDistance);
                     if (ConfigOptions.islandSettings.islandProtection && (Math.abs(player.posX - posX) > ConfigOptions.islandSettings.protectionBuildRange
                             || Math.abs(player.posZ - posY) > ConfigOptions.islandSettings.protectionBuildRange)) {
-                        player.sendMessage(
-                                new TextComponentString(TextFormatting.RED + "You can't be away from your island or spawn that far away!"));
+                        if (player.ticksExisted % 60 == 0)
+                            player.sendMessage(
+                                    new TextComponentString(TextFormatting.RED + "You can't be away from your island or spawn that far away!"));
                         player.setGameType(GameType.SURVIVAL);
                         IslandManager.tpPlayerToPos(player,
                                 new BlockPos(posX, ConfigOptions.islandSettings.islandYLevel, posY), pos);

@@ -161,7 +161,7 @@ public class IslandManager {
             pos = pos.add(getSpawnOffset(islandPos));
         }
 
-        if (!ConfigOptions.islandSettings.forceSpawn) {
+        if (ConfigOptions.islandSettings.forceSpawn) {
             if (!player.getEntityWorld().isAirBlock(pos) && !player.getEntityWorld().isAirBlock(pos.up())) {
                 pos = player.getEntityWorld().getTopSolidOrLiquidBlock(pos.up(2));
 

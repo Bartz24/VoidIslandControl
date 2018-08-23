@@ -302,7 +302,10 @@ public class PlatformCommand extends CommandBase implements ICommand {
                 + TextFormatting.WHITE + " : Spawn a new platform. Must not already be on an island."));
 
         player.sendMessage(new TextComponentString(TextFormatting.RED + "invite <player>" + TextFormatting.WHITE
-                + " : Ask another player join your island. Player must do join to go to your island."));
+                + " : Ask another player join your island team. Player must do join to go to your island team."));
+
+        player.sendMessage(new TextComponentString(TextFormatting.RED + "join" + TextFormatting.WHITE
+                + " : Use this to join an island whose team has invited you recently"));
 
         player.sendMessage(new TextComponentString(TextFormatting.RED + "leave" + TextFormatting.WHITE
                 + " : Leave your island, clear inventory, and go to spawn.\n      (If you are the last person, no one can claim that island again.)"));
