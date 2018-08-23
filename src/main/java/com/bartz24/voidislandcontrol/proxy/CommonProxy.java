@@ -17,7 +17,6 @@ public class CommonProxy {
 	public void preInit(FMLPreInitializationEvent e) {
 		StructureLoader.preInit(e);
 		new WorldTypeVoid();
-		IslandRegistry.initIslands();
 	}
 
 	public void init(FMLInitializationEvent e) {
@@ -26,6 +25,7 @@ public class CommonProxy {
 		if (IslandRegistry.isValidGoG())
 			MinecraftForge.EVENT_BUS.register(new GoGSupport());
 
+		IslandRegistry.initIslands();
 		WorldOverride.registerWorldProviders();
 	}
 
