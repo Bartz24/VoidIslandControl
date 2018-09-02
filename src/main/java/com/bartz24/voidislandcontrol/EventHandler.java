@@ -157,6 +157,13 @@ public class EventHandler {
                 else
                     IslandManager.removeJoinLoc(player);
             }
+            if (IslandManager.hasLeaveConfirm(player)) {
+                int time = IslandManager.getLeaveTime(player);
+                if (time > 0)
+                    IslandManager.setLeaveTime(player, time - 1);
+                else
+                    IslandManager.removeLeaveConfirm(player);
+            }
 
             loadWorld(player);
         }

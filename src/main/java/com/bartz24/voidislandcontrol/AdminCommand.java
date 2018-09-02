@@ -158,7 +158,7 @@ public class AdminCommand extends CommandBase implements ICommand {
                 + " : Kick a player from their island"));
 
         player.sendMessage(new TextComponentString(TextFormatting.RED + "assign <player> islandX islandY" + TextFormatting.WHITE
-                + " : Assign a player to an island. Use island coordinates (found using getClosestIslandPos), not real coordinates"));
+                + " : Assign a player to an island. Use island coordinates (found using getIslandHere), not real coordinates"));
 
         player.sendMessage(new TextComponentString(TextFormatting.RED + "assignOwner <player>" + TextFormatting.WHITE
                 + " : Sets the player as the owner of their island"));
@@ -210,7 +210,7 @@ public class AdminCommand extends CommandBase implements ICommand {
             return;
         }
 
-        IslandPos position = IslandManager.getIslandAtPos(Integer.parseInt(args[2]), Integer.parseInt(args[3]));
+        IslandPos position = IslandManager.getIslandAtPos((int) Math.round(player.posX / ConfigOptions.islandSettings.islandDistance), (int) Math.round(player.posZ / ConfigOptions.islandSettings.islandDistance));
         if (position == null) {
             player.sendMessage(new TextComponentString("No island here"));
             return;
@@ -219,8 +219,7 @@ public class AdminCommand extends CommandBase implements ICommand {
         player.sendMessage(new TextComponentString("X: " + position.getX() + ", Y: " + position.getY()));
         player.sendMessage(new TextComponentString("Player UUIDs: "));
 
-        for(String s: position.getPlayerUUIDs())
-        {
+        for (String s : position.getPlayerUUIDs()) {
             player.sendMessage(new TextComponentString(s));
         }
     }

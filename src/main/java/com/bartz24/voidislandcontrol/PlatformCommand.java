@@ -481,6 +481,13 @@ public class PlatformCommand extends CommandBase implements ICommand {
             return;
         }
 
+        if(IslandManager.getPlayerIsland(player.getGameProfile().getId()).getPlayerUUIDs().size() == 1 && !IslandManager.hasLeaveConfirm(player))
+        {
+            IslandManager.setLeaveConfirm(player);
+            player.sendMessage(new TextComponentString("Type /island leave again soon to confirm"));
+            return;
+        }
+
         if (!IslandManager.playerHasIsland(player.getGameProfile().getId())) {
             player.sendMessage(new TextComponentString("You don't have an island!"));
             return;

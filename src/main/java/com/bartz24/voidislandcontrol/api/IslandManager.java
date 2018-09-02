@@ -168,10 +168,10 @@ public class IslandManager {
                 player.sendMessage(new TextComponentString("Failed to spawn. Sent to top block of platform spawn."));
             }
         }
-        player.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 120, 20, false, false));
+        player.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 1200, 20, false, false));
         player.extinguish();
-        player.addPotionEffect(new PotionEffect(MobEffects.FIRE_RESISTANCE, 120, 20, false, false));
-        player.addPotionEffect(new PotionEffect(MobEffects.REGENERATION, 120, 20, false, false));
+        player.addPotionEffect(new PotionEffect(MobEffects.FIRE_RESISTANCE, 1200, 20, false, false));
+        player.addPotionEffect(new PotionEffect(MobEffects.REGENERATION, 1200, 20, false, false));
 
 
         if (player.dimension != ConfigOptions.worldGenSettings.baseDimension && player instanceof EntityPlayerMP)
@@ -228,6 +228,12 @@ public class IslandManager {
         persist.setInteger("VICJoinTime", 400);
     }
 
+    public static void setLeaveConfirm(EntityPlayer player) {
+        NBTTagCompound persist = setPlayerData(player);
+
+        persist.setInteger("VICLeaveTime", 400);
+    }
+
     public static void removeJoinLoc(EntityPlayer player) {
         NBTTagCompound persist = setPlayerData(player);
 
@@ -235,11 +241,22 @@ public class IslandManager {
         persist.removeTag("VICJoinY");
         persist.removeTag("VICJoinTime");
     }
+    public static void removeLeaveConfirm(EntityPlayer player) {
+        NBTTagCompound persist = setPlayerData(player);
+
+        persist.removeTag("VICLeaveTime");
+    }
 
     public static boolean hasJoinLoc(EntityPlayer player) {
         NBTTagCompound persist = setPlayerData(player);
 
         return persist.hasKey("VICJoinX") && persist.hasKey("VICJoinY");
+    }
+
+    public static boolean hasLeaveConfirm(EntityPlayer player) {
+        NBTTagCompound persist = setPlayerData(player);
+
+        return persist.hasKey("VICLeaveTime");
     }
 
     public static IslandPos getJoinLoc(EntityPlayer player) {
@@ -255,10 +272,22 @@ public class IslandManager {
         return hasJoinLoc(player) ? persist.getInteger("VICJoinTime") : -1;
     }
 
+    public static int getLeaveTime(EntityPlayer player) {
+        NBTTagCompound persist = setPlayerData(player);
+
+        return hasLeaveConfirm(player) ? persist.getInteger("VICLeaveTime") : -1;
+    }
+
     public static void setJoinTime(EntityPlayer player, int val) {
         NBTTagCompound persist = setPlayerData(player);
 
         persist.setInteger("VICJoinTime", val);
+    }
+
+    public static void setLeaveTime(EntityPlayer player, int val) {
+        NBTTagCompound persist = setPlayerData(player);
+
+        persist.setInteger("VICLeaveTime", val);
     }
 
     public static NBTTagCompound setPlayerData(EntityPlayer player) {
