@@ -65,7 +65,7 @@ public class ConfigOptions {
 		public boolean spawnChest = false;
 		@Config.Comment("Start the world in one chunk mode")
 		public boolean oneChunk = false;
-		@Config.Comment("Starting items given to new players")
+		@Config.Comment("Starting items given to new players. Use the /startingInv command in game")
 		public String[] startingItems = emptyFilledArray(36);
 		@Config.Comment("Biome used for islands")
 		public int islandBiomeID = -1;

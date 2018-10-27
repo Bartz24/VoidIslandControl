@@ -2,7 +2,6 @@ package com.bartz24.voidislandcontrol;
 
 import com.bartz24.voidislandcontrol.api.IslandManager;
 import com.bartz24.voidislandcontrol.api.IslandPos;
-import com.bartz24.voidislandcontrol.api.VICTeleporter;
 import com.bartz24.voidislandcontrol.api.event.*;
 import com.bartz24.voidislandcontrol.config.ConfigOptions;
 import com.bartz24.voidislandcontrol.world.WorldTypeVoid;
@@ -481,10 +480,9 @@ public class PlatformCommand extends CommandBase implements ICommand {
             return;
         }
 
-        if(IslandManager.getPlayerIsland(player.getGameProfile().getId()).getPlayerUUIDs().size() == 1 && !IslandManager.hasLeaveConfirm(player))
-        {
+        if (IslandManager.getPlayerIsland(player.getGameProfile().getId()).getPlayerUUIDs().size() == 1 && !IslandManager.hasLeaveConfirm(player)) {
             IslandManager.setLeaveConfirm(player);
-            player.sendMessage(new TextComponentString("Type /island leave again soon to confirm"));
+            player.sendMessage(new TextComponentString("Type /" + ConfigOptions.commandSettings.commandName + " leave again soon to confirm"));
             return;
         }
 
@@ -496,14 +494,15 @@ public class PlatformCommand extends CommandBase implements ICommand {
         IslandManager.removePlayer(player.getGameProfile().getId());
         player.sendMessage(new TextComponentString("You are now free to join another island!"));
 
-        player.inventory.clear();
+        if (!ConfigOptions.islandSettings.resetInventory)
+            player.inventory.clear();
 
         if (IslandManager.hasVisitLoc(player)) {
             player.setGameType(GameType.SURVIVAL);
             IslandManager.removeVisitLoc(player);
         }
 
-        IslandManager.tpPlayerToPosSpawn(player, new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0), null);
+        IslandManager.tpPlayerToPosSpawn(player, new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0), IslandManager.getIslandAtPos(0, 0));
     }
 
     public static void tpHome(EntityPlayerMP player, String[] args) throws CommandException {
@@ -530,7 +529,7 @@ public class PlatformCommand extends CommandBase implements ICommand {
         BlockPos home = new BlockPos(isPos.getX() * ConfigOptions.islandSettings.islandDistance,
                 ConfigOptions.islandSettings.islandYLevel, isPos.getY() * ConfigOptions.islandSettings.islandDistance);
 
-        if (Math.hypot(player.posX - home.getX() - 0.5,
+        if (player.dimension == ConfigOptions.worldGenSettings.baseDimension && Math.hypot(player.posX - home.getX() - 0.5,
                 player.posZ - home.getZ() - 0.5) < ConfigOptions.islandSettings.protectionBuildRange) {
             player.sendMessage(new TextComponentString("You are too close to home!\nYou must be at least "
                     + (ConfigOptions.islandSettings.protectionBuildRange) + " blocks away!"));
@@ -556,8 +555,7 @@ public class PlatformCommand extends CommandBase implements ICommand {
             player.setGameType(GameType.SURVIVAL);
             IslandManager.removeVisitLoc(player);
         }
-
-        IslandManager.tpPlayerToPos(player, new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0), null);
+        IslandManager.tpPlayerToPos(player, new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0), IslandManager.getIslandAtPos(0, 0));
     }
 
     @Override

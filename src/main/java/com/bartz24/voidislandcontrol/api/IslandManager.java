@@ -185,6 +185,12 @@ public class IslandManager {
     public static BlockPos getSpawnOffset(IslandPos islandPos) {
         if (islandPos == null)
             return null;
+        if (islandPos.getX() == 0 && islandPos.getY() == 0) {
+            if (ConfigOptions.islandSettings.islandMainSpawnType.equals("bedrock") || ConfigOptions.islandSettings.islandMainSpawnType.equals("random"))
+                return new BlockPos(0, 7, 0);
+            else
+                return IslandGenerations.get(getIndexOfIslandType(ConfigOptions.islandSettings.islandMainSpawnType)).spawnOffset;
+        }
         return IslandGenerations.get(getIndexOfIslandType(islandPos.getType())).spawnOffset;
     }
 
@@ -241,6 +247,7 @@ public class IslandManager {
         persist.removeTag("VICJoinY");
         persist.removeTag("VICJoinTime");
     }
+
     public static void removeLeaveConfirm(EntityPlayer player) {
         NBTTagCompound persist = setPlayerData(player);
 

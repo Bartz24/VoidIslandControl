@@ -29,6 +29,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.WorldEvent.Save;
 import net.minecraftforge.event.world.WorldEvent.Unload;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
@@ -59,12 +60,10 @@ public class EventHandler {
         }
         return 0;
     }
-
     @SubscribeEvent
-    public void playerUpdate(LivingUpdateEvent event) {
-        if (event.getEntityLiving() instanceof EntityPlayer && !event.getEntity().getEntityWorld().isRemote) {
-            EntityPlayer player = (EntityPlayer) event.getEntityLiving();
-
+    public void playerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (!event.player.getEntityWorld().isRemote) {
+            EntityPlayer player = event.player;
 
             if (player.getEntityWorld().getWorldInfo().getTerrainType() instanceof WorldTypeVoid) {
                 if (IslandManager.spawnedPlayers.size() == 0
@@ -93,7 +92,7 @@ public class EventHandler {
                     } else {
 
                         if (ConfigOptions.islandSettings.oneChunk) {
-                            WorldBorder border = event.getEntityLiving().getEntityWorld().getMinecraftServer().worlds[0]
+                            WorldBorder border = player.getEntityWorld().getMinecraftServer().worlds[0]
                                     .getWorldBorder();
 
                             border.setCenter(0, 0);
@@ -109,6 +108,12 @@ public class EventHandler {
                     IslandManager.spawnedPlayers.add(player.getGameProfile().getId().toString());
                 }
             }
+        }
+    }
+    @SubscribeEvent
+    public void playerUpdate(LivingUpdateEvent event) {
+        if (event.getEntityLiving() instanceof EntityPlayer && !event.getEntity().getEntityWorld().isRemote) {
+            EntityPlayer player = (EntityPlayer) event.getEntityLiving();
 
             if (player.getEntityWorld().getWorldInfo().getTerrainType() instanceof WorldTypeVoid
                     && IslandManager.hasVisitLoc(player) && player.dimension == ConfigOptions.worldGenSettings.baseDimension && !player.isCreative()) {
