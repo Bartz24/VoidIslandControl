@@ -160,6 +160,8 @@ public class IslandManager {
         if (getSpawnOffset(islandPos) != null) {
             pos = pos.add(getSpawnOffset(islandPos));
         }
+        else
+            pos = pos.add(getSpawnOffset(IslandManager.CurrentIslandsList.get(0)));
 
         if (ConfigOptions.islandSettings.forceSpawn) {
             if (!player.getEntityWorld().isAirBlock(pos) && !player.getEntityWorld().isAirBlock(pos.up())) {
@@ -168,10 +170,10 @@ public class IslandManager {
                 player.sendMessage(new TextComponentString("Failed to spawn. Sent to top block of platform spawn."));
             }
         }
-        player.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 1200, 20, false, false));
+        player.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, ConfigOptions.islandSettings.buffTimer, 20, false, false));
         player.extinguish();
-        player.addPotionEffect(new PotionEffect(MobEffects.FIRE_RESISTANCE, 1200, 20, false, false));
-        player.addPotionEffect(new PotionEffect(MobEffects.REGENERATION, 1200, 20, false, false));
+        player.addPotionEffect(new PotionEffect(MobEffects.FIRE_RESISTANCE, ConfigOptions.islandSettings.buffTimer, 20, false, false));
+        player.addPotionEffect(new PotionEffect(MobEffects.REGENERATION, ConfigOptions.islandSettings.buffTimer, 20, false, false));
 
 
         if (player.dimension != ConfigOptions.worldGenSettings.baseDimension && player instanceof EntityPlayerMP)
@@ -196,6 +198,13 @@ public class IslandManager {
 
     public static void tpPlayerToPosSpawn(EntityPlayer player, BlockPos pos, IslandPos islandPos) {
         tpPlayerToPos(player, pos, islandPos);
+
+        if (getSpawnOffset(islandPos) != null) {
+            pos = pos.add(getSpawnOffset(islandPos));
+        }
+        else
+            pos = pos.add(getSpawnOffset(IslandManager.CurrentIslandsList.get(0)));
+
         player.setSpawnPoint(pos, true);
     }
 

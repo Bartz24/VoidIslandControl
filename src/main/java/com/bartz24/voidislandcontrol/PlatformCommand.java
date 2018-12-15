@@ -178,7 +178,7 @@ public class PlatformCommand extends CommandBase implements ICommand {
 
         EntityPlayerMP player2 = (EntityPlayerMP) player.getEntityWorld().getPlayerEntityByName(args[1]);
 
-        IslandPos isPos = IslandManager.getPlayerIsland(player2.getGameProfile().getId());
+        IslandPos isPos = player2 == null ? null : IslandManager.getPlayerIsland(player2.getGameProfile().getId());
 
         if (args[1].equals(player.getName())) {
             player.sendMessage(new TextComponentString("Can't visit your own island."));

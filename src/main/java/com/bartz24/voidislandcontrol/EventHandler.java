@@ -68,16 +68,16 @@ public class EventHandler {
             if (player.getEntityWorld().getWorldInfo().getTerrainType() instanceof WorldTypeVoid) {
                 if (IslandManager.spawnedPlayers.size() == 0
                         || !IslandManager.hasPlayerSpawned(player.getGameProfile().getId())) {
-                    IslandManager.tpPlayerToPos(player, new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0), null);
                     World world = player.getEntityWorld();
-                    if (world.getSpawnPoint().getX() != 0 || world.getSpawnPoint().getZ() != 0)
-                        world.setSpawnPoint(new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0));
                     BlockPos spawn = new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0);
 
                     if (!IslandManager.hasPosition(0, 0)) {
                         IslandManager.CurrentIslandsList.add(new IslandPos(0, 0));
+                        BlockPos pos = spawn.add(IslandManager.getSpawnOffset(IslandManager.CurrentIslandsList.get(0)));
+                        world.setSpawnPoint(pos);
                         createSpawn(player, player.getEntityWorld(), spawn);
                     }
+                    IslandManager.tpPlayerToPos(player, new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0), IslandManager.CurrentIslandsList.get(0));
 
                     if (ConfigOptions.islandSettings.autoCreate && !IslandManager.worldOneChunk) {
 
@@ -137,8 +137,8 @@ public class EventHandler {
 
             if (player.getEntityWorld().getWorldInfo().getTerrainType() instanceof WorldTypeVoid
                     && player.dimension == ConfigOptions.worldGenSettings.baseDimension && !player.isCreative() && !IslandManager.hasVisitLoc(player)) {
-                if (ConfigOptions.islandSettings.islandProtection && (Math.abs(player.posX) > ConfigOptions.islandSettings.protectionBuildRange
-                        || Math.abs(player.posZ) > ConfigOptions.islandSettings.protectionBuildRange)) {
+                if (IslandManager.CurrentIslandsList.size() > 2 && (ConfigOptions.islandSettings.islandProtection && (Math.abs(player.posX) > ConfigOptions.islandSettings.protectionBuildRange
+                        || Math.abs(player.posZ) > ConfigOptions.islandSettings.protectionBuildRange))) {
                     IslandPos pos = IslandManager.getPlayerIsland(player.getGameProfile().getId());
                     int posX = pos == null ? 0 : (pos.getX() * ConfigOptions.islandSettings.islandDistance);
                     int posY = pos == null ? 0 : (pos.getY() * ConfigOptions.islandSettings.islandDistance);

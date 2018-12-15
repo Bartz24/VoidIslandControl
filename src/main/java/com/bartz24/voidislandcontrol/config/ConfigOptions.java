@@ -88,6 +88,8 @@ public class ConfigOptions {
 		public String[] customIslands = emptyFilledArray(0);
 		@Config.Comment("Forces players to spawn at the spawn position. By default, the player will be teleported to a safe spot above it if spawning fails. This config disables that")
 		public boolean forceSpawn = false;
+		@Config.Comment("Sets how long the buffs are given when spawning on an island in ticks (I think)")
+		public int buffTimer = 1200;
 
 		@Config.Comment("Settings for the grass island")
 		public GrassIslandSettings grassSettings = new GrassIslandSettings();
