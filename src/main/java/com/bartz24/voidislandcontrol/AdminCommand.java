@@ -83,6 +83,8 @@ public class AdminCommand extends CommandBase implements ICommand {
                 assignOwner(player, args);
             else if (subCommand.equals("getIslandHere"))
                 getIsland(player, args);
+            else if (subCommand.equals("list"))
+                listIslands(player, args);
 
         }
 
@@ -164,7 +166,10 @@ public class AdminCommand extends CommandBase implements ICommand {
                 + " : Sets the player as the owner of their island"));
 
         player.sendMessage(new TextComponentString(TextFormatting.RED + "getIslandHere" + TextFormatting.WHITE
-                + " : Shows the island coordinates of the island the player is at"));
+                + " : Shows the island coordinates of the island the player is at and what players are on that island"));
+
+        player.sendMessage(new TextComponentString(TextFormatting.RED + "list" + TextFormatting.WHITE
+                + " : Lists the islands"));
     }
 
     public static void assign(EntityPlayerMP player, String[] args) throws CommandException {
@@ -221,6 +226,25 @@ public class AdminCommand extends CommandBase implements ICommand {
 
         for (String s : position.getPlayerUUIDs()) {
             player.sendMessage(new TextComponentString(s));
+        }
+    }
+
+
+    public static void listIslands(EntityPlayerMP player, String[] args) throws CommandException {
+
+        int index = 0;
+        for (IslandPos position : IslandManager.CurrentIslandsList) {
+            if (position == null) {
+                continue;
+            }
+            player.sendMessage(new TextComponentString("Island " + index));
+            player.sendMessage(new TextComponentString("X: " + position.getX() + ", Y: " + position.getY()));
+            player.sendMessage(new TextComponentString("Player UUIDs: "));
+
+            for (String s : position.getPlayerUUIDs()) {
+                player.sendMessage(new TextComponentString(s));
+            }
+            index++;
         }
     }
 

@@ -279,7 +279,7 @@ public class IslandRegistry {
             BlockPos genPos = new BlockPos(pos.getX() - t.getSize().getX() / 2, pos.getY(),
                     pos.getZ() - t.getSize().getZ() / 2);
             PlacementSettings settings = new PlacementSettings().setIgnoreStructureBlock(false);
-            t.addBlocksToWorld(world, genPos, settings);
+            t.addBlocksToWorld(world, genPos, settings, 3);
             Map<BlockPos, String> dataBlocks = t.getDataBlocks(genPos, settings);
             for (BlockPos dataPos : dataBlocks.keySet()) {
                 switch (dataBlocks.get(dataPos)) {

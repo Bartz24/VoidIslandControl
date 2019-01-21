@@ -163,6 +163,10 @@ public class PlatformCommand extends CommandBase implements ICommand {
     }
 
     public static void visit(EntityPlayerMP player, String[] args) throws CommandException {
+        if (!ConfigOptions.commandSettings.allowVisitCommand) {
+            player.sendMessage(new TextComponentString("This command was disabled"));
+            return;
+        }
         if (args.length != 2) {
             player.sendMessage(new TextComponentString("Must have 1 argument."));
             return;
@@ -506,6 +510,10 @@ public class PlatformCommand extends CommandBase implements ICommand {
     }
 
     public static void tpHome(EntityPlayerMP player, String[] args) throws CommandException {
+        if (!ConfigOptions.commandSettings.allowHomeCommand) {
+            player.sendMessage(new TextComponentString("This command was disabled"));
+            return;
+        }
         if (args.length > 1) {
             player.sendMessage(new TextComponentString("Must have no arguments"));
             return;

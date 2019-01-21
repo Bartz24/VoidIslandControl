@@ -77,6 +77,8 @@ public class ConfigOptions {
 		public BottomBlockType bottomBlockType = BottomBlockType.BEDROCK;
 		@Config.Comment("Automatically give new players islands")
 		public boolean autoCreate = false;
+		@Config.Comment("ONLY TAKES EFFECT ON DEDICATED SERVERS-Automatically give new players islands")
+		public boolean autoCreateServersOnly = false;
 		@Config.Comment("Allow players to create or reset their islands")
 		public boolean allowIslandCreation = true;
 		@Config.Comment("Reset players inventory with the starting inventory")
@@ -196,6 +198,10 @@ public class ConfigOptions {
 		public CommandBlockType commandBlockType = CommandBlockType.NONE;
 		@Config.Comment("Run always or require redstone")
 		public boolean commandBlockAuto = false;
+		@Config.Comment("Allows the visit command to be used")
+		public boolean allowVisitCommand = true;
+		@Config.Comment("Allows the home command to be used")
+		public boolean allowHomeCommand = true;
 		@Config.Comment("Command for the command block to run")
 		public String commandBlockCommand = "";
 		@Config.Comment("Command Block direction to face")

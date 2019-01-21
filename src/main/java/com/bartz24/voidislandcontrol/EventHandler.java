@@ -15,6 +15,7 @@ import net.minecraft.entity.passive.EntityCow;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntityCommandBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
@@ -79,7 +80,9 @@ public class EventHandler {
                     }
                     IslandManager.tpPlayerToPos(player, new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0), IslandManager.CurrentIslandsList.get(0));
 
-                    if (ConfigOptions.islandSettings.autoCreate && !IslandManager.worldOneChunk) {
+                    boolean autoCreate = ConfigOptions.islandSettings.autoCreate || (player.getServer().isDedicatedServer() && ConfigOptions.islandSettings.autoCreateServersOnly);
+
+                    if (autoCreate && !IslandManager.worldOneChunk) {
 
                         if (player instanceof EntityPlayerMP) {
                             try {
@@ -137,7 +140,7 @@ public class EventHandler {
 
             if (player.getEntityWorld().getWorldInfo().getTerrainType() instanceof WorldTypeVoid
                     && player.dimension == ConfigOptions.worldGenSettings.baseDimension && !player.isCreative() && !IslandManager.hasVisitLoc(player)) {
-                if (IslandManager.CurrentIslandsList.size() > 2 && (ConfigOptions.islandSettings.islandProtection && (Math.abs(player.posX) > ConfigOptions.islandSettings.protectionBuildRange
+                if (player.getServer().isDedicatedServer() && (ConfigOptions.islandSettings.islandProtection && (Math.abs(player.posX) > ConfigOptions.islandSettings.protectionBuildRange
                         || Math.abs(player.posZ) > ConfigOptions.islandSettings.protectionBuildRange))) {
                     IslandPos pos = IslandManager.getPlayerIsland(player.getGameProfile().getId());
                     int posX = pos == null ? 0 : (pos.getX() * ConfigOptions.islandSettings.islandDistance);
