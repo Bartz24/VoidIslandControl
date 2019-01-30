@@ -63,10 +63,12 @@ public class WorldTypeVoid extends WorldType {
         {
             mc.displayGuiScreen(new net.minecraft.client.gui.GuiCustomizeWorldScreen(guiCreateWorld, guiCreateWorld.chunkProviderSettingsJson));
         }
+        else if(ConfigOptions.worldGenSettings.worldGenType == WorldGenType.WORLDTYPE && overridenWorldType != null)
+            overridenWorldType.onCustomizeButton(mc, guiCreateWorld);
     }
     public boolean isCustomizable()
     {
-        return ConfigOptions.worldGenSettings.worldGenType == WorldGenType.CUSTOMIZED;
+        return ConfigOptions.worldGenSettings.worldGenType == WorldGenType.CUSTOMIZED || (ConfigOptions.worldGenSettings.worldGenType == WorldGenType.CUSTOMIZED && overridenWorldType != null && overridenWorldType.isCustomizable());
     }
 
     @Override

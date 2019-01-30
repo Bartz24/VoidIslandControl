@@ -66,13 +66,13 @@ public class EventHandler {
         if (!event.player.getEntityWorld().isRemote) {
             EntityPlayer player = event.player;
 
-            if (player.getEntityWorld().getWorldInfo().getTerrainType() instanceof WorldTypeVoid) {
+            if (player.getEntityWorld().getWorldInfo().getTerrainType() instanceof WorldTypeVoid && player.dimension == ConfigOptions.worldGenSettings.baseDimension) {
                 if (IslandManager.spawnedPlayers.size() == 0
                         || !IslandManager.hasPlayerSpawned(player.getGameProfile().getId())) {
                     World world = player.getEntityWorld();
                     BlockPos spawn = new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0);
 
-                    if (!IslandManager.hasPosition(0, 0)) {
+                    if (IslandManager.CurrentIslandsList.size() == 0) {
                         IslandManager.CurrentIslandsList.add(new IslandPos(0, 0));
                         BlockPos pos = spawn.add(IslandManager.getSpawnOffset(IslandManager.CurrentIslandsList.get(0)));
                         world.setSpawnPoint(pos);

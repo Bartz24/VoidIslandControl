@@ -9,7 +9,7 @@ buildscript {
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "1.5.2"
+version = "1.5.3"
 group= "com.bartz24.voidislandcontrol" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "voidislandcontrol"
 

@@ -159,8 +159,7 @@ public class IslandManager {
 
         if (getSpawnOffset(islandPos) != null) {
             pos = pos.add(getSpawnOffset(islandPos));
-        }
-        else
+        } else
             pos = pos.add(getSpawnOffset(IslandManager.CurrentIslandsList.get(0)));
 
         if (ConfigOptions.islandSettings.forceSpawn) {
@@ -190,8 +189,10 @@ public class IslandManager {
         if (islandPos.getX() == 0 && islandPos.getY() == 0) {
             if (ConfigOptions.islandSettings.islandMainSpawnType.equals("bedrock") || ConfigOptions.islandSettings.islandMainSpawnType.equals("random"))
                 return new BlockPos(0, 7, 0);
-            else
+            else if (getIndexOfIslandType(ConfigOptions.islandSettings.islandMainSpawnType) != -1)
                 return IslandGenerations.get(getIndexOfIslandType(ConfigOptions.islandSettings.islandMainSpawnType)).spawnOffset;
+            else
+                return new BlockPos(0, 0, 0);
         }
         return IslandGenerations.get(getIndexOfIslandType(islandPos.getType())).spawnOffset;
     }
@@ -201,8 +202,7 @@ public class IslandManager {
 
         if (getSpawnOffset(islandPos) != null) {
             pos = pos.add(getSpawnOffset(islandPos));
-        }
-        else
+        } else
             pos = pos.add(getSpawnOffset(IslandManager.CurrentIslandsList.get(0)));
 
         player.setSpawnPoint(pos, true);

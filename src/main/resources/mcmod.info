@@ -3,7 +3,7 @@
   "modid": "voidislandcontrol",
   "name": "Void Island Control",
   "description": "Adds a world type for custom island generation for void worlds.",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "mcversion": "${mcversion}",
   "url": "https://github.com/Bartz24/VoidIslandControl",
   "updateUrl": "",
