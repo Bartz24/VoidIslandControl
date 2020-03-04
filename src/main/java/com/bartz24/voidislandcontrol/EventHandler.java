@@ -283,21 +283,23 @@ public class EventHandler {
 
     @SubscribeEvent
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        EntityPlayer player = event.player;
+        if (ConfigOptions.islandSettings.handleRespawn) {
+            EntityPlayer player = event.player;
 
-        if (player.getEntityWorld().getWorldInfo().getTerrainType() instanceof WorldTypeVoid) {
-            if (player.getBedLocation() == null
-                    || player.getBedSpawnLocation(player.getEntityWorld(), player.getBedLocation(), true) == null) {
+            if (player.getEntityWorld().getWorldInfo().getTerrainType() instanceof WorldTypeVoid) {
+                if (player.getBedLocation() == null
+                        || player.getBedSpawnLocation(player.getEntityWorld(), player.getBedLocation(), true) == null) {
 
-                IslandPos iPos = IslandManager.getPlayerIsland(player.getGameProfile().getId());
+                    IslandPos iPos = IslandManager.getPlayerIsland(player.getGameProfile().getId());
 
-                BlockPos pos = new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0);
-                if (iPos != null)
-                    pos = new BlockPos(iPos.getX() * ConfigOptions.islandSettings.islandDistance,
-                            ConfigOptions.islandSettings.islandYLevel,
-                            iPos.getY() * ConfigOptions.islandSettings.islandDistance);
+                    BlockPos pos = new BlockPos(0, ConfigOptions.islandSettings.islandYLevel, 0);
+                    if (iPos != null)
+                        pos = new BlockPos(iPos.getX() * ConfigOptions.islandSettings.islandDistance,
+                                ConfigOptions.islandSettings.islandYLevel,
+                                iPos.getY() * ConfigOptions.islandSettings.islandDistance);
 
-                IslandManager.tpPlayerToPos(player, pos, iPos);
+                    IslandManager.tpPlayerToPos(player, pos, iPos);
+                }
             }
         }
     }
